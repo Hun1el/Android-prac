@@ -1,5 +1,5 @@
 /**
- * Экран регистрации
+ * Экран авторизации
  *
  * @author Солоников Антон
  * @date 15.12.2025
@@ -8,6 +8,7 @@
 package com.example.androidpracapp.ui.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,32 +53,14 @@ import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.Text
 
-// Экран регистрации
+// Экран авторизации
 @Composable
-fun RegisterAccountScreen(
+fun SignInScreen(
     modifier: Modifier = Modifier
 ) {
-    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var agreedToTerms by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-    var showErrorDialog by remember { mutableStateOf(false) }
-
-    // Диалог ошибки
-    if (showErrorDialog) {
-        AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
-            title = { Text("Ошибка") },
-            text = { Text(errorMessage) },
-            confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
-                    Text("OK")
-                }
-            }
-        )
-    }
 
     Column(
         modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 80.dp),
@@ -86,7 +69,7 @@ fun RegisterAccountScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = stringResource(id = R.string.sign_up1),
+            text = stringResource(id = R.string.hello),
             style = MaterialTheme.typography.displayMedium
         )
 
@@ -99,37 +82,6 @@ fun RegisterAccountScreen(
         )
 
         Spacer(modifier = Modifier.height(54.dp))
-
-        Text(
-            text = stringResource(id = R.string.your_name),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            placeholder = {
-                Text(
-                    "XXXXXXXX",
-                    color = Hint,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Background,
-                unfocusedBorderColor = Background,
-                focusedLabelColor = Accent
-            ),
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
             text = stringResource(id = R.string.email),
@@ -159,7 +111,7 @@ fun RegisterAccountScreen(
             shape = RoundedCornerShape(14.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         Text(
             text = stringResource(id = R.string.password),
@@ -209,45 +161,27 @@ fun RegisterAccountScreen(
             shape = RoundedCornerShape(14.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.End
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.policy_check),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp).clickable { agreedToTerms = !agreedToTerms },
-                tint = if (agreedToTerms) {
-                    Accent
-                } else {
-                    Text
-                }
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                color = Hint,
-                text = stringResource(id = R.string.personal_data),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.clickable { agreedToTerms = !agreedToTerms }
-            )
+            TextButton(
+                onClick = { }
+            ) {
+                Text(
+                    text = stringResource(R.string.restore),
+                    color = Hint,
+                    textAlign = TextAlign.End
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = stringResource(id = R.string.sign_up2),
-            onClick = {
-                val error = checkEmail(email)
-                if (error != null) {
-                    errorMessage = error
-                    showErrorDialog = true
-                }
-            },
-            enabled = agreedToTerms,
+            text = stringResource(id = R.string.sign_in),
+            onClick = {},
+            enabled = true,
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )
@@ -261,32 +195,20 @@ fun RegisterAccountScreen(
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Hint)) {
-                        append(stringResource(id = R.string.sign_in_acc).split("? ")[0] + "? ")
+                        append(stringResource(R.string.create_user).split("? ")[0] + "? ")
                     }
                     withStyle(style = SpanStyle(color = Text)) {
-                        append(stringResource(id = R.string.sign_in_acc).split("? ")[1])
+                        append(stringResource(id = R.string.create_user).split("? ")[1])
                     }
                 },
                 style = MaterialTheme.typography.bodySmall
             )
         }
-
-    }
-}
-
-// Функция для проверки корректности почты
-private fun checkEmail(email: String): String? {
-    val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
-
-    return when {
-        email.isBlank() -> "Email не может быть пустым"
-        !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
-        else -> null
     }
 }
 
 @Preview
 @Composable
-private fun RegisterAccountScreenPreview() {
-    RegisterAccountScreen()
+private fun SignInScreenPreview() {
+    SignInScreen()
 }

@@ -16,6 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -34,8 +36,9 @@ fun PrimaryButton(
     enabled: Boolean = true,
     height: Dp = 50.dp,
     width: Modifier = Modifier.fillMaxWidth(),
-    fontSize: TextUnit = 14.sp,
-    cornerRadius: Dp = 14.dp
+    cornerRadius: Dp = 14.dp,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
+    textColor: Color = Background
 ) {
     Button(
         onClick = onClick, modifier = modifier.height(height).then(width),
@@ -50,8 +53,8 @@ fun PrimaryButton(
     ) {
         Text(
             text = text,
-            fontSize = fontSize,
-            style = MaterialTheme.typography.labelMedium
+            style = style,
+            color = textColor
         )
     }
 }
