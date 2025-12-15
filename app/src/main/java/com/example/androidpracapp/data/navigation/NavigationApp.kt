@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
 import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
+import com.example.androidpracapp.ui.screen.VerificationScreen
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -40,7 +41,15 @@ fun NavigationApp(navController: NavHostController) {
 
         composable(NavRoute.ForgotPassword.route) {
             ForgotPasswordScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onNavigateToOTP = { navController.navigate(NavRoute.VerifyOTP.route) }
+            )
+        }
+
+        composable(NavRoute.VerifyOTP.route) {
+            VerificationScreen(
+                onBackClick = { navController.popBackStack() },
+                onSuccess = { navController.navigate(NavRoute.Home.route) }
             )
         }
     }

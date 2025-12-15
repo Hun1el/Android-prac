@@ -1,16 +1,9 @@
 /**
- * Экран авторизации
+ * Экран OTP
  *
  * @author Солоников Антон
  * @date 15.12.2025
  */
-/**
- * Экран восстановления пароля
- *
- * @author Солоников Антон
- * @date 15.12.2025
- */
-
 
 package com.example.androidpracapp.ui.screen
 
@@ -33,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,53 +42,39 @@ import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
+import com.example.androidpracapp.ui.components.OTPInput
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
 
-// Экран восстановления пароля
+// Экран OTP
 @Composable
-fun ForgotPasswordScreen(
+fun VerificationScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onNavigateToOTP: () -> Unit = {}
+    onSuccess: () -> Unit = {}
 ) {
-    var email by remember { mutableStateOf("") }
-    var showErrorDialog by remember { mutableStateOf(false) }
+    var otpCode by remember { mutableStateOf("") }
     var showSuccessDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-
-    // Функция для проверки корректности почты
-    fun checkEmail(email: String): String? {
-        val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
-
-        return when {
-            email.isBlank() -> "Email не может быть пустым"
-            !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
-            else -> null
-        }
-    }
-
-    // Диалог ошибки
-    if (showErrorDialog) {
-        MessageDialog(
-            title = "Ошибка",
-            description = errorMessage,
-            onOk = { showErrorDialog = false }
-        )
-    }
 
     // Диалог успеха
     if (showSuccessDialog) {
         MessageDialog(
-            title = stringResource(R.string.check_email1),
-            description = stringResource(R.string.email_code),
+            title = "Успешно",
+            description = "Код подтвержден",
             icon = painterResource(id = R.drawable.email),
             showButtons = false,
-            onOk = { onNavigateToOTP() }
+            onOk = { onSuccess() }
         )
+    }
+
+    // Автоматическое подтверждение когда введено 6 цифр
+    LaunchedEffect(otpCode) {
+        if (otpCode.length == 6) {
+            showSuccessDialog = true
+        }
     }
 
     Column(
@@ -107,18 +87,18 @@ fun ForgotPasswordScreen(
         ) {
             BackButton(onClick = { onBackClick() })
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = stringResource(id = R.string.forgot_password),
+            text = stringResource(id = R.string.otp),
             style = MaterialTheme.typography.displayMedium
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(id = R.string.zero),
+            text = stringResource(id = R.string.check_email2),
             color = SubTextDark,
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
@@ -127,43 +107,19 @@ fun ForgotPasswordScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = {
-                Text(
-                    "xyz@gmail.com",
-                    color = Hint,
-                    style = MaterialTheme.typography.labelMedium
-                )
-            },
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Background,
-                unfocusedBorderColor = Background,
-                focusedLabelColor = Accent
-            ),
-            shape = RoundedCornerShape(14.dp)
+        Text(
+            text = stringResource(id = R.string.otp_code),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        PrimaryButton(
-            text = stringResource(R.string.send),
-            onClick = {
-                val emailError = checkEmail(email)
-
-                if (emailError != null) {
-                    errorMessage = emailError
-                    showErrorDialog = true
-                } else {
-                    // Email корректный - показываем диалог
-                    showSuccessDialog = true
-                }
-            },
-            enabled = true,
-            style = MaterialTheme.typography.labelMedium,
-            textColor = Background
+        OTPInput(
+            onOtpChange = { code ->
+                otpCode = code
+            }
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -172,6 +128,6 @@ fun ForgotPasswordScreen(
 
 @Preview
 @Composable
-private fun ForgotPasswordScreenPreview() {
-    ForgotPasswordScreen()
+private fun VerificationScreenPreview() {
+    VerificationScreen()
 }

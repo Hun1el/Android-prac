@@ -1,6 +1,7 @@
 package com.example.androidpracapp.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,7 @@ fun MessageDialog(
 ) {
     Dialog(onDismissRequest = { }) {
         Box(
-            modifier = Modifier.fillMaxWidth(1f),
+            modifier = Modifier.fillMaxWidth(1f).clickable { if (!showButtons) onOk() },
             contentAlignment = Alignment.Center
         ) {
             Surface(
@@ -53,15 +54,15 @@ fun MessageDialog(
                 color = Color.White
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                    modifier = Modifier.padding(32.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (icon != null) {
                         Box(
                             modifier = Modifier.size(44.dp).background(
-                                    color = Accent,
-                                    shape = CircleShape
-                                ),
+                                color = Accent,
+                                shape = CircleShape
+                            ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -71,7 +72,8 @@ fun MessageDialog(
                                 tint = Color.White
                             )
                         }
-                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
 
                     Text(
@@ -80,7 +82,7 @@ fun MessageDialog(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = description,
@@ -89,7 +91,7 @@ fun MessageDialog(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     if (showButtons && (onCancel != null || onOk != null)) {
                         Row(
@@ -100,8 +102,8 @@ fun MessageDialog(
                                     onClick = onCancel,
                                     modifier = Modifier.weight(1f).height(48.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = SubTextLight,
-                                        contentColor = SubTextDark
+                                        containerColor = Color(0xFFD8D8D8),
+                                        contentColor = Color(0xFF707B81)
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {

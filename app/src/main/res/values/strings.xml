@@ -25,7 +25,7 @@
     <string name="check_email1">Проверьте Ваш Email</string>
     <string name="email_code">Мы Отправили Код Восстановления Пароля На Вашу Электронную Почту.</string>
     <string name="otp">OTP проверка</string>
-    <string name="check_email2">Пожалуйста, проверьте свою электронную почту, чтобы увидеть код подтверждения</string>
+    <string name="check_email2">Пожалуйста, Проверьте Свою Электронную Почту, Чтобы Увидеть Код Подтверждения</string>
     <string name="otp_code">OTP Код</string>
     <string name="new_password1">задать новый пароль</string>
     <string name="new_password2">установите новый пароль для входа в вашу учетную запись</string>
