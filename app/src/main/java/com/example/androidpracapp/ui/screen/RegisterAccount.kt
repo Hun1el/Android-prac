@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -30,10 +31,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
@@ -46,9 +50,9 @@ import com.example.androidpracapp.ui.theme.Text
 fun RegisterAccountScreen(
     modifier: Modifier = Modifier
 ) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var agreedToTerms by remember { mutableStateOf(false) }
 
@@ -83,13 +87,16 @@ fun RegisterAccountScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(id = R.string.password)) },
-            placeholder = { Text("xyz@gmail.com") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            value = name,
+            onValueChange = { name = it },
+            placeholder = {
+                Text(
+                    "XXXXXXXX",
+                    color = Hint,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            },
+            modifier = Modifier.fillMaxWidth().height(48.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
@@ -113,11 +120,14 @@ fun RegisterAccountScreen(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text(stringResource(id = R.string.email)) },
-            placeholder = { Text("xyz@gmail.com") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            placeholder = {
+                Text(
+                    "xyz@gmail.com",
+                    color = Hint,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            },
+            modifier = Modifier.fillMaxWidth().height(48.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
@@ -141,11 +151,34 @@ fun RegisterAccountScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text(stringResource(id = R.string.password)) },
-            placeholder = { Text("xyz@gmail.com") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            placeholder = {
+                Text(
+                    "••••••••",
+                    color = Hint,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            },
+            visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            trailingIcon = {
+                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (isPasswordVisible)
+                                R.drawable.eye_open
+                            else
+                                R.drawable.eye_close
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = Hint
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth().height(48.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
@@ -164,8 +197,12 @@ fun RegisterAccountScreen(
             Icon(
                 painter = painterResource(id = R.drawable.policy_check),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = Accent
+                modifier = Modifier.size(24.dp).clickable { agreedToTerms = !agreedToTerms },
+                tint = if (agreedToTerms) {
+                    Accent
+                } else {
+                    Text
+                }
             )
 
             Spacer(modifier = Modifier.width(12.dp))
