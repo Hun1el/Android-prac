@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,17 +37,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
+import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
@@ -65,7 +61,9 @@ fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel(),
     onSignUpClick: () -> Unit = {},
-    onSignInSuccess: () -> Unit = {}
+    onSignInSuccess: () -> Unit = {},
+    onForgotPasswordClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -122,9 +120,16 @@ fun SignInScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 80.dp),
+        modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            BackButton(onClick = { onBackClick() })
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
@@ -225,7 +230,7 @@ fun SignInScreen(
             horizontalArrangement = Arrangement.End
         ) {
             TextButton(
-                onClick = { }
+                onClick = { onForgotPasswordClick() }
             ) {
                 Text(
                     text = stringResource(R.string.restore),

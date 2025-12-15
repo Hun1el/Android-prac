@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
+import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
@@ -61,7 +62,8 @@ fun RegisterAccountScreen(
     modifier: Modifier = Modifier,
     viewModel: SignUpViewModel = viewModel(),
     onSignInClick: () -> Unit = {},
-    onSignUpSuccess: () -> Unit = {}
+    onSignUpSuccess: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -131,9 +133,16 @@ fun RegisterAccountScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 80.dp),
+        modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            BackButton(onClick = { onBackClick() })
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
