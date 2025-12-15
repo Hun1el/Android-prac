@@ -1,0 +1,58 @@
+package com.example.androidpracapp.ui.components
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.Background
+import com.example.androidpracapp.ui.theme.Disable
+
+@Composable
+fun PrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    height: Dp = 50.dp,
+    width: Modifier = Modifier.fillMaxWidth(),
+    fontSize: TextUnit = 14.sp,
+    cornerRadius: Dp = 14.dp
+) {
+    Button(
+        onClick = onClick, modifier = modifier.height(height).then(width),
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Accent,
+            contentColor = Background,
+            disabledContainerColor = Disable,
+            disabledContentColor = Background
+        ),
+        shape = RoundedCornerShape(cornerRadius)
+    ) {
+        Text(
+            text = text,
+            fontSize = fontSize,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryButtonPreview() {
+    PrimaryButton(
+        onClick = { },
+        text = "Test"
+    )
+}
