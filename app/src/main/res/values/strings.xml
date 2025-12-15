@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">AndroidPracApp</string>
-    
     <string name="welcome">Добро пожаловать</string>
     <string name="journey">Начнем путешествие</string>
     <string name="collection">Умная, великолепная и модная коллекция Изучите сейчас</string>

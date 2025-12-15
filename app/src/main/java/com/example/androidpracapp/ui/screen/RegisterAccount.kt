@@ -1,3 +1,10 @@
+/**
+ * Экран регистрации
+ *
+ * @author Солоников Антон
+ * @date 15.12.2025
+ */
+
 package com.example.androidpracapp.ui.screen
 
 import androidx.compose.foundation.clickable
@@ -11,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +52,7 @@ import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.Text
 
+// Экран регистрации
 @Composable
 fun RegisterAccountScreen(
     modifier: Modifier = Modifier
@@ -55,6 +62,22 @@ fun RegisterAccountScreen(
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var agreedToTerms by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    // Диалог ошибки
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Ошибка") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showErrorDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 80.dp),
@@ -93,10 +116,10 @@ fun RegisterAccountScreen(
                 Text(
                     "XXXXXXXX",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
                 )
             },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
@@ -127,14 +150,13 @@ fun RegisterAccountScreen(
                     style = MaterialTheme.typography.labelMedium
                 )
             },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true
+            shape = RoundedCornerShape(14.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -178,14 +200,13 @@ fun RegisterAccountScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Accent,
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true
+            shape = RoundedCornerShape(14.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -219,7 +240,13 @@ fun RegisterAccountScreen(
 
         PrimaryButton(
             text = stringResource(id = R.string.sign_up2),
-            onClick = { },
+            onClick = {
+                val error = checkEmail(email)
+                if (error != null) {
+                    errorMessage = error
+                    showErrorDialog = true
+                }
+            },
             enabled = agreedToTerms
         )
 
@@ -232,14 +259,26 @@ fun RegisterAccountScreen(
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Hint)) {
-                        append("Есть аккаунт? ")
+                        append(stringResource(id = R.string.sign_in_acc).split("? ")[0] + "? ")
                     }
                     withStyle(style = SpanStyle(color = Text)) {
-                        append("Войти")
+                        append(stringResource(id = R.string.sign_in_acc).split("? ")[1])
                     }
                 }
             )
         }
+
+    }
+}
+
+// Функция для проверки корректности почты
+private fun checkEmail(email: String): String? {
+    val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
+
+    return when {
+        email.isBlank() -> "Email не может быть пустым"
+        !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
+        else -> null
     }
 }
 

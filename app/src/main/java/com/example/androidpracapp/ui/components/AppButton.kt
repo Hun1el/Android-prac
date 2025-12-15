@@ -25,10 +25,7 @@ import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Disable
 
-/**
- * Основная кнопка приложения
-*/
-
+// Основная кнопка приложения
 @Composable
 fun PrimaryButton(
     text: String,

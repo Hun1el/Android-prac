@@ -14,7 +14,7 @@
     <string name="next">next</string>
     <string name="sign_up1">Register Account</string>
     <string name="your_name">Your Name</string>
-    <string name="personal_data">I agree to the processing of\\npersonal data</string>
+    <string name="personal_data">I agree to the processing of \npersonal data</string>
     <string name="sign_up2">Sign up</string>
     <string name="sign_in">Sign In</string>
     <string name="create_user">New User? Create Account</string>
