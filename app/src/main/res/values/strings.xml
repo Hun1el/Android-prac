@@ -20,7 +20,7 @@
     <string name="sign_in_acc">Есть аккаунт? Войти</string>
     <string name="restore">Воcстановить</string>
     <string name="forgot_password">Забыл пароль</string>
-    <string name="zero">Введите свою учетную запись для сброса</string>
+    <string name="zero">Введите свою учетную запись \nДля сброса</string>
     <string name="send">Отправить</string>
     <string name="check_email1">Проверьте Ваш Email</string>
     <string name="email_code">Мы отправили код восстановления пароля на вашу электронную почту.</string>
