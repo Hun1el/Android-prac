@@ -8,6 +8,7 @@
 package com.example.androidpracapp.ui.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +56,8 @@ import com.example.androidpracapp.ui.theme.Text
 // Экран регистрации
 @Composable
 fun RegisterAccountScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSignInClick: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -291,23 +293,23 @@ fun RegisterAccountScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        TextButton(
-            onClick = { },
-            modifier = Modifier.padding(bottom = 50.dp)
+        Row(
+            modifier = Modifier.padding(bottom = 50.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Hint)) {
-                        append(stringResource(id = R.string.sign_in_acc).split("? ")[0] + "? ")
-                    }
-                    withStyle(style = SpanStyle(color = Text)) {
-                        append(stringResource(id = R.string.sign_in_acc).split("? ")[1])
-                    }
-                },
+                text = stringResource(id = R.string.sign_in_acc).split("? ")[0] + "? ",
+                color = Hint,
                 style = MaterialTheme.typography.bodySmall
             )
-        }
 
+            Text(
+                text = stringResource(id = R.string.sign_in_acc).split("? ")[1],
+                color = Text,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.clickable { onSignInClick() }
+            )
+        }
     }
 }
 

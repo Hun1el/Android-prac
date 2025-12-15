@@ -57,7 +57,9 @@ import com.example.androidpracapp.ui.theme.Text
 // Экран авторизации
 @Composable
 fun SignInScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSignUpClick: () -> Unit = {},
+    onSignInSuccess: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -236,20 +238,23 @@ fun SignInScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        TextButton(
-            onClick = { },
-            modifier = Modifier.padding(bottom = 50.dp)
+        Row(
+            modifier = Modifier
+                .padding(bottom = 50.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Hint)) {
-                        append(stringResource(R.string.create_user).split("? ")[0] + "? ")
-                    }
-                    withStyle(style = SpanStyle(color = Text)) {
-                        append(stringResource(id = R.string.create_user).split("? ")[1])
-                    }
-                },
+                text = stringResource(R.string.create_user).split("? ")[0] + "? ",
+                color = Hint,
                 style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                text = stringResource(R.string.create_user).split("? ")[1],
+                color = Text,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.clickable { onSignUpClick() }
             )
         }
     }
