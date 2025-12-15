@@ -7,9 +7,7 @@
 
 package com.example.androidpracapp.ui.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,13 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,10 +35,6 @@ import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.OTPInput
-import com.example.androidpracapp.ui.components.PrimaryButton
-import com.example.androidpracapp.ui.theme.Accent
-import com.example.androidpracapp.ui.theme.Background
-import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
 
 // Экран OTP
@@ -57,23 +45,11 @@ fun VerificationScreen(
     onSuccess: () -> Unit = {}
 ) {
     var otpCode by remember { mutableStateOf("") }
-    var showSuccessDialog by remember { mutableStateOf(false) }
-
-    // Диалог успеха
-    if (showSuccessDialog) {
-        MessageDialog(
-            title = "Успешно",
-            description = "Код подтвержден",
-            icon = painterResource(id = R.drawable.email),
-            showButtons = false,
-            onOk = { onSuccess() }
-        )
-    }
 
     // Автоматическое подтверждение когда введено 6 цифр
     LaunchedEffect(otpCode) {
         if (otpCode.length == 6) {
-            showSuccessDialog = true
+
         }
     }
 

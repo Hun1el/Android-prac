@@ -1,7 +1,15 @@
+/**
+ * Компонент OTP
+ *
+ * @author Солоников Антон
+ * @date 15.12.2025
+ */
+
 package com.example.androidpracapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,14 +21,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +45,11 @@ fun OTPInput(
 ) {
     var otpCode by remember { mutableStateOf("") }
     var selectedIndex by remember { mutableStateOf(0) }
+    val focusRequesters = remember { List(6) { FocusRequester() } }
+
+    LaunchedEffect(Unit) {
+        focusRequesters[0].requestFocus()
+    }
 
     Row(
         modifier = modifier,
@@ -47,26 +61,38 @@ fun OTPInput(
                 value = otpCode.getOrNull(index)?.toString() ?: "",
                 isSelected = selectedIndex == index,
                 onValueChange = { newValue ->
+                    if (newValue.length <= 1 && (newValue.isEmpty() || newValue.all { it.isDigit() })) {
+                        if (newValue.isEmpty()) {
+                            otpCode = otpCode.take(index)
 
-                    if (newValue.isEmpty()) {
-                        otpCode = otpCode.removeRange(index, index + 1)
-                    } else if (newValue.all { it.isDigit() }) {
-                        val newCode = otpCode.toMutableList()
-
-                        if (index < newCode.size) {
-                            newCode[index] = newValue[0]
+                            if (index > 0) {
+                                selectedIndex = index - 1
+                                focusRequesters[index - 1].requestFocus()
+                            }
                         } else {
-                            newCode.add(newValue[0])
-                        }
-                        otpCode = newCode.joinToString("").take(6)
+                            val newCode = otpCode.toMutableList()
 
-                        if (index < 5 && newValue.isNotEmpty()) {
-                            selectedIndex = index + 1
+                            while (newCode.size < index) {
+                                newCode.add('0')
+                            }
+
+                            if (index < newCode.size) {
+                                newCode[index] = newValue[0]
+                            } else {
+                                newCode.add(newValue[0])
+                            }
+                            otpCode = newCode.joinToString("")
+
+                            if (index < 5) {
+                                selectedIndex = index + 1
+                                focusRequesters[index + 1].requestFocus()
+                            }
                         }
+                        onOtpChange(otpCode)
                     }
-                    onOtpChange(otpCode)
                 },
-                onFocus = { selectedIndex = index }
+                onFocus = { selectedIndex = index },
+                focusRequester = focusRequesters[index]
             )
         }
     }
@@ -78,21 +104,18 @@ fun OTPField(
     isSelected: Boolean,
     onValueChange: (String) -> Unit,
     onFocus: () -> Unit,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.width(46.dp).height(99.dp).background(
-                color = Color(0xFFF7F7F9),
+                color = Background,
                 shape = RoundedCornerShape(12.dp)
             ).border(
                 width = 2.dp,
-                color = if (isSelected) {
-                    Red
-                } else {
-                    Background
-                },
+                color = if (isSelected) Red else Background,
                 shape = RoundedCornerShape(12.dp)
-            ),
+            ).clickable { onFocus() },
         contentAlignment = Alignment.Center
     ) {
         BasicTextField(
@@ -103,10 +126,9 @@ fun OTPField(
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
                 color = Text
             ),
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.focusRequester(focusRequester)
         )
 
         if (value.isEmpty()) {
