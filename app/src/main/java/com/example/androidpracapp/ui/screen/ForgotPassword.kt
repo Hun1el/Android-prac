@@ -14,7 +14,9 @@
 
 package com.example.androidpracapp.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +24,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -34,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
+import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
@@ -55,6 +62,8 @@ fun ForgotPasswordScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     // Функция для проверки корректности почты
     fun checkEmail(email: String): String? {
@@ -65,6 +74,25 @@ fun ForgotPasswordScreen(
             !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
             else -> null
         }
+    }
+
+    // Диалог ошибки
+    if (showErrorDialog) {
+        MessageDialog(
+            title = "Ошибка",
+            description = errorMessage,
+            onOk = { showErrorDialog = false }
+        )
+    }
+
+    // Диалог успеха
+    if (showSuccessDialog) {
+        MessageDialog(
+            title = stringResource(R.string.check_email1),
+            description = stringResource(R.string.email_code),
+            icon = painterResource(id = R.drawable.email),
+            showButtons = false
+        )
     }
 
     Column(
@@ -121,6 +149,15 @@ fun ForgotPasswordScreen(
         PrimaryButton(
             text = stringResource(R.string.send),
             onClick = {
+                val emailError = checkEmail(email)
+
+                if (emailError != null) {
+                    errorMessage = emailError
+                    showErrorDialog = true
+                } else {
+                    // Email корректный - показываем диалог
+                    showSuccessDialog = true
+                }
             },
             enabled = true,
             style = MaterialTheme.typography.labelMedium,

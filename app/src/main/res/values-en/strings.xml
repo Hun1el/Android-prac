@@ -24,7 +24,7 @@
     <string name="zero">Enter your Email account to reset \nYour password</string>
     <string name="send">Send</string>
     <string name="check_email1">Check your email</string>
-    <string name="email_code">We have send password recovery code in your email</string>
+    <string name="email_code">We Have Send Password Recovery Code In Your Email</string>
     <string name="otp">OTP Verification</string>
     <string name="check_email2">Please check your email to see the verification code</string>
     <string name="otp_code">OTP Code</string>

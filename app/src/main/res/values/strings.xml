@@ -23,7 +23,7 @@
     <string name="zero">Введите свою учетную запись \nДля сброса</string>
     <string name="send">Отправить</string>
     <string name="check_email1">Проверьте Ваш Email</string>
-    <string name="email_code">Мы отправили код восстановления пароля на вашу электронную почту.</string>
+    <string name="email_code">Мы Отправили Код Восстановления Пароля На Вашу Электронную Почту.</string>
     <string name="otp">OTP проверка</string>
     <string name="check_email2">Пожалуйста, проверьте свою электронную почту, чтобы увидеть код подтверждения</string>
     <string name="otp_code">OTP Код</string>
