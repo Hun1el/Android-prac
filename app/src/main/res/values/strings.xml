@@ -2,6 +2,7 @@
     <string name="app_name">AndroidPracApp</string>
     
     <string name="welcome">Добро пожаловать</string>
+    <string name="journey">Начнем путешествие</string>
     <string name="collection">Умная, великолепная и модная коллекция Изучите сейчас</string>
     <string name="strength">У вас есть сила, чтобы</string>
     <string name="plant">В вашей комнате много красивых и привлекательных растений</string>
@@ -66,6 +67,7 @@
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>
     <string name="save">Сохранить</string>
+    <string name="confirm">подтвердить</string>
     <string name="map">карта</string>
     <string name="loyal_card">карта лояльности</string>
 </resources>
