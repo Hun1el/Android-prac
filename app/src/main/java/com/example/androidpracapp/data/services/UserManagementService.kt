@@ -1,6 +1,6 @@
 package com.example.androidpracapp.data.services
 
-import com.example.androidpracapp.data.models.User
+import com.example.androidpracapp.domain.models.User
 import com.example.androidpracapp.domain.models.SignUpResponse
 import retrofit2.Response
 import retrofit2.http.Body

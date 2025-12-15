@@ -1,4 +1,4 @@
-package com.example.androidpracapp.data.models
+package com.example.androidpracapp.domain.models
 
 data class User(
     val email: String,

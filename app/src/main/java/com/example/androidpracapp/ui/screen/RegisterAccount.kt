@@ -27,23 +27,24 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
@@ -52,20 +53,42 @@ import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.Text
+import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
 // Экран регистрации
 @Composable
 fun RegisterAccountScreen(
     modifier: Modifier = Modifier,
-    onSignInClick: () -> Unit = {}
+    viewModel: SignUpViewModel = viewModel(),
+    onSignInClick: () -> Unit = {},
+    onSignUpSuccess: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var agreedToTerms by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
+
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val errorMessage = viewModel.signUpError.collectAsState().value
+    val isSuccess = viewModel.signUpSuccess.collectAsState().value
+    val context = LocalContext.current
+
+    // Переход при успешной регистрации
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            onSignUpSuccess()
+            viewModel.clearSuccess()
+        }
+    }
+
+    // Диалог ошибки
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            showErrorDialog = true
+        }
+    }
 
     // Функция для проверки корректности почты
     fun checkEmail(email: String): String? {
@@ -82,6 +105,7 @@ fun RegisterAccountScreen(
     fun checkPassword(passwordValue: String): String? {
         return when {
             passwordValue.isBlank() -> "Пароль не может быть пустым"
+            passwordValue.length < 6 -> "Пароль должен быть не менее 6 символов"
             else -> null
         }
     }
@@ -94,12 +118,15 @@ fun RegisterAccountScreen(
         }
     }
 
-    // Диалог ошибки
-    if (showErrorDialog) {
+    // Сообщение
+    if (showErrorDialog && errorMessage != null) {
         MessageDialog(
             title = "Ошибка",
             description = errorMessage,
-            onOk = { showErrorDialog = false }
+            onOk = {
+                showErrorDialog = false
+                viewModel.clearError()
+            }
         )
     }
 
@@ -149,7 +176,8 @@ fun RegisterAccountScreen(
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(14.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -179,7 +207,8 @@ fun RegisterAccountScreen(
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(14.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -229,7 +258,8 @@ fun RegisterAccountScreen(
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp)
+            shape = RoundedCornerShape(14.dp),
+            enabled = !isLoading
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -262,7 +292,7 @@ fun RegisterAccountScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = stringResource(id = R.string.sign_up2),
+            text = if (isLoading) "Загрузка..." else stringResource(id = R.string.sign_up2),
             onClick = {
                 val nameError = checkName(name)
                 val emailError = checkEmail(email)
@@ -270,23 +300,23 @@ fun RegisterAccountScreen(
 
                 when {
                     nameError != null -> {
-                        errorMessage = nameError
+                        viewModel.signUpError.value = nameError
                         showErrorDialog = true
                     }
                     emailError != null -> {
-                        errorMessage = emailError
+                        viewModel.signUpError.value = emailError
                         showErrorDialog = true
                     }
                     passwordError != null -> {
-                        errorMessage = passwordError
+                        viewModel.signUpError.value = passwordError
                         showErrorDialog = true
                     }
                     else -> {
-
+                        viewModel.signUp(email, password, context)
                     }
                 }
             },
-            enabled = agreedToTerms,
+            enabled = agreedToTerms && !isLoading,
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )
