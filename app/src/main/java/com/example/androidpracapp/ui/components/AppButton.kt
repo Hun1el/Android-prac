@@ -1,3 +1,10 @@
+/**
+ * Компоненты кнопок приложения
+ *
+ * @author Солоников Антон
+ * @date 15.12.2025
+ */
+
 package com.example.androidpracapp.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Disable
+
+/**
+ * Основная кнопка приложения
+*/
 
 @Composable
 fun PrimaryButton(
