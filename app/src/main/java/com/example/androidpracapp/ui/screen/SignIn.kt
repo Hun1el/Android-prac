@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
+import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
@@ -61,6 +62,36 @@ fun SignInScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    // Функция для проверки корректности почты
+    fun checkEmail(email: String): String? {
+        val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
+
+        return when {
+            email.isBlank() -> "Email не может быть пустым"
+            !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
+            else -> null
+        }
+    }
+
+    // Функция для проверки пароля
+    fun checkPassword(passwordValue: String): String? {
+        return when {
+            passwordValue.isBlank() -> "Пароль не может быть пустым"
+            else -> null
+        }
+    }
+
+    // Диалог ошибки
+    if (showErrorDialog) {
+        MessageDialog(
+            title = "Ошибка",
+            description = errorMessage,
+            onOk = { showErrorDialog = false }
+        )
+    }
 
     Column(
         modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 80.dp),
@@ -180,7 +211,24 @@ fun SignInScreen(
 
         PrimaryButton(
             text = stringResource(id = R.string.sign_in),
-            onClick = {},
+            onClick = {
+                val emailError = checkEmail(email)
+                val passwordError = checkPassword(password)
+
+                when {
+                    emailError != null -> {
+                        errorMessage = emailError
+                        showErrorDialog = true
+                    }
+                    passwordError != null -> {
+                        errorMessage = passwordError
+                        showErrorDialog = true
+                    }
+                    else -> {
+
+                    }
+                }
+            },
             enabled = true,
             style = MaterialTheme.typography.labelMedium,
             textColor = Background

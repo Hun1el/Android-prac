@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
+import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
@@ -65,17 +65,39 @@ fun RegisterAccountScreen(
     var errorMessage by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
 
+    // Функция для проверки корректности почты
+    fun checkEmail(email: String): String? {
+        val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
+
+        return when {
+            email.isBlank() -> "Email не может быть пустым"
+            !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
+            else -> null
+        }
+    }
+
+    // Функция для проверки пароля
+    fun checkPassword(passwordValue: String): String? {
+        return when {
+            passwordValue.isBlank() -> "Пароль не может быть пустым"
+            else -> null
+        }
+    }
+
+    // Функция для проверки имени
+    fun checkName(nameValue: String): String? {
+        return when {
+            nameValue.isBlank() -> "Имя не может быть пустым"
+            else -> null
+        }
+    }
+
     // Диалог ошибки
     if (showErrorDialog) {
-        AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
-            title = { Text("Ошибка") },
-            text = { Text(errorMessage) },
-            confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
-                    Text("OK")
-                }
-            }
+        MessageDialog(
+            title = "Ошибка",
+            description = errorMessage,
+            onOk = { showErrorDialog = false }
         )
     }
 
@@ -125,8 +147,7 @@ fun RegisterAccountScreen(
                 unfocusedBorderColor = Background,
                 focusedLabelColor = Accent
             ),
-            shape = RoundedCornerShape(14.dp),
-            singleLine = true
+            shape = RoundedCornerShape(14.dp)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -241,10 +262,26 @@ fun RegisterAccountScreen(
         PrimaryButton(
             text = stringResource(id = R.string.sign_up2),
             onClick = {
-                val error = checkEmail(email)
-                if (error != null) {
-                    errorMessage = error
-                    showErrorDialog = true
+                val nameError = checkName(name)
+                val emailError = checkEmail(email)
+                val passwordError = checkPassword(password)
+
+                when {
+                    nameError != null -> {
+                        errorMessage = nameError
+                        showErrorDialog = true
+                    }
+                    emailError != null -> {
+                        errorMessage = emailError
+                        showErrorDialog = true
+                    }
+                    passwordError != null -> {
+                        errorMessage = passwordError
+                        showErrorDialog = true
+                    }
+                    else -> {
+
+                    }
                 }
             },
             enabled = agreedToTerms,
@@ -271,17 +308,6 @@ fun RegisterAccountScreen(
             )
         }
 
-    }
-}
-
-// Функция для проверки корректности почты
-private fun checkEmail(email: String): String? {
-    val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
-
-    return when {
-        email.isBlank() -> "Email не может быть пустым"
-        !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
-        else -> null
     }
 }
 

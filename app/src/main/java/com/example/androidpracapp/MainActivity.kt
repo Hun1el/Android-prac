@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androidpracapp.ui.screen.RegisterAccountScreen
+import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.theme.AndroidPracAppTheme
 
 class MainActivity : ComponentActivity() {
