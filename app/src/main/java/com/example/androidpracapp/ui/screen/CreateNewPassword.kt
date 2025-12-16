@@ -62,7 +62,8 @@ fun CreateNewPasswordScreen(
 ) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isPasswordVisible1 by remember { mutableStateOf(false) }
+    var isPasswordVisible2 by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf("") }
 
@@ -129,16 +130,16 @@ fun CreateNewPasswordScreen(
                     style = MaterialTheme.typography.labelMedium
                 )
             },
-            visualTransformation = if (isPasswordVisible) {
+            visualTransformation = if (isPasswordVisible1) {
                 VisualTransformation.None
             } else {
                 PasswordVisualTransformation()
             },
             trailingIcon = {
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                IconButton(onClick = { isPasswordVisible1 = !isPasswordVisible1 }) {
                     Icon(
                         painter = painterResource(
-                            id = if (isPasswordVisible) {
+                            id = if (isPasswordVisible1) {
                                 R.drawable.eye_open
                             } else {
                                 R.drawable.eye_close
@@ -180,16 +181,16 @@ fun CreateNewPasswordScreen(
                     style = MaterialTheme.typography.labelMedium
                 )
             },
-            visualTransformation = if (isPasswordVisible) {
+            visualTransformation = if (isPasswordVisible2) {
                 VisualTransformation.None
             } else {
                 PasswordVisualTransformation()
             },
             trailingIcon = {
-                IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                IconButton(onClick = { isPasswordVisible2 = !isPasswordVisible2 }) {
                     Icon(
                         painter = painterResource(
-                            id = if (isPasswordVisible) {
+                            id = if (isPasswordVisible2) {
                                 R.drawable.eye_open
                             } else {
                                 R.drawable.eye_close
