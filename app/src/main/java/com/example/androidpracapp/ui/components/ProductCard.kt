@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -87,11 +88,12 @@ fun ProductCard(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
-                    
+
                     Box(
-                        modifier = Modifier.align(Alignment.TopStart).padding(3.dp).size(22.dp).background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(4.dp)
+                        modifier = Modifier.align(Alignment.TopStart).padding(top = 10.dp).size(28.dp).clip(CircleShape)
+                            .background(
+                                color = Background,
+                                shape = CircleShape
                             ).clickable {
                                 isFavorite = !isFavorite
                                 data.onFavoriteClick()
@@ -107,8 +109,12 @@ fun ProductCard(
                                 }
                             ),
                             contentDescription = "Favorite",
-                            modifier = Modifier.size(12.dp),
-                            tint = if (isFavorite) Red else Text
+                            modifier = Modifier.size(14.dp),
+                            tint = if (isFavorite) {
+                                Red
+                            } else {
+                                Text
+                            }
                         )
                     }
                 }
