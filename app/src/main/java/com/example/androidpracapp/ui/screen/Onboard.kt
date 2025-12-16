@@ -20,12 +20,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,6 +38,8 @@ import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Block
+import com.example.androidpracapp.ui.theme.GradientBoardDark
+import com.example.androidpracapp.ui.theme.GradientBoardLight
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.Text
 
@@ -44,8 +48,16 @@ fun OnboardScreen(
     modifier: Modifier = Modifier,
     onStartClick: () -> Unit = {}
 ) {
+    val gradientBrush = Brush.verticalGradient(
+        colors = listOf(
+            Accent,
+            GradientBoardLight,
+            GradientBoardDark
+        )
+    )
+
     Column(
-        modifier = modifier.fillMaxSize().background(Accent),
+        modifier = modifier.fillMaxSize().background(gradientBrush),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -74,26 +86,26 @@ fun OnboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.size(8.dp).clip(CircleShape).background(Block)
+                modifier = Modifier.size(width = 45.dp, height = 8.dp).background(Block, RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.size(8.dp))
 
             Box(
-                modifier = Modifier.size(8.dp).clip(CircleShape).background(SubTextDark)
+                modifier = Modifier.size(width = 30.dp, 8.dp).background(SubTextDark, RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.size(8.dp))
 
             Box(
-                modifier = Modifier.size(8.dp).clip(CircleShape).background(SubTextDark)
+                modifier = Modifier.size(width = 30.dp, 8.dp).background(SubTextDark, RoundedCornerShape(4.dp))
             )
         }
 
         Spacer(modifier = Modifier.height(136.dp))
 
         PrimaryButton(
-            text = "Начать",
+            text = stringResource(R.string.start),
             onClick = { onStartClick() },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
             style = MaterialTheme.typography.labelMedium,
