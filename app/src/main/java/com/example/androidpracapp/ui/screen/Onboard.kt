@@ -1,11 +1,3 @@
-/**
- * Экран при старте
- *
- * @author Солоников Антон
- * @date 16.12.2025
- */
-
-
 package com.example.androidpracapp.ui.screen
 
 import androidx.compose.foundation.Image
@@ -21,13 +13,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.theme.Accent
 
-// Экран при старте
 @Composable
-fun SplashScreen(
+fun OnboardScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -35,17 +25,12 @@ fun SplashScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.splash),
-            contentDescription = null,
-            modifier = Modifier.size(135.dp),
-            contentScale = ContentScale.Fit
-        )
+
     }
 }
 
 @Preview
 @Composable
-private fun SplashScreenPreview() {
-    SplashScreen()
+private fun OnboardScreenPreview() {
+    OnboardScreen()
 }
