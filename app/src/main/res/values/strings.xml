@@ -27,9 +27,9 @@
     <string name="otp">OTP проверка</string>
     <string name="check_email2">Пожалуйста, Проверьте Свою Электронную Почту, Чтобы Увидеть Код Подтверждения</string>
     <string name="otp_code">OTP Код</string>
-    <string name="new_password1">задать новый пароль</string>
-    <string name="new_password2">установите новый пароль для входа в вашу учетную запись</string>
-    <string name="password_confirmation">подтверждение пароля</string>
+    <string name="new_password1">Задать Новый Пароль</string>
+    <string name="new_password2">Установите Новый Пароль Для Входа В Вашу Учетную Запись</string>
+    <string name="password_confirmation">Подтверждение пароля</string>
     <string name="main">Главная</string>
     <string name="search">Поиск</string>
     <string name="category">Категории</string>
@@ -61,12 +61,12 @@
     <string name="notification">Уведомления</string>
     <string name="settings">Настройки</string>
     <string name="sign_out">Выйти</string>
-    <string name="profile">профиль</string>
+    <string name="profile">Профиль</string>
     <string name="change_photo">Изменить фото профиля</string>
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>
     <string name="save">Сохранить</string>
-    <string name="confirm">подтвердить</string>
-    <string name="map">карта</string>
-    <string name="loyal_card">карта лояльности</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="map">Карта</string>
+    <string name="loyal_card">Карта лояльности</string>
 </resources>

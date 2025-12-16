@@ -31,8 +31,6 @@ import androidx.compose.ui.window.Dialog
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
-import com.example.androidpracapp.ui.theme.SubTextDark
-import com.example.androidpracapp.ui.theme.SubTextLight
 
 @Composable
 fun MessageDialog(
