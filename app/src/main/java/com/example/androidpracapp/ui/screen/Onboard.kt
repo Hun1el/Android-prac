@@ -19,18 +19,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,10 +40,11 @@ import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.GradientBoardDark
 import com.example.androidpracapp.ui.theme.GradientBoardLight
 import com.example.androidpracapp.ui.theme.SubTextDark
+import com.example.androidpracapp.ui.theme.SubTextLight
 import com.example.androidpracapp.ui.theme.Text
 
 @Composable
-fun OnboardScreen(
+fun OnboardScreen1(
     modifier: Modifier = Modifier,
     onStartClick: () -> Unit = {}
 ) {
@@ -86,19 +86,19 @@ fun OnboardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier.size(width = 45.dp, height = 8.dp).background(Block, RoundedCornerShape(4.dp))
+                modifier = Modifier.size(width = 45.dp, height = 6.dp).background(Block, RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.size(8.dp))
 
             Box(
-                modifier = Modifier.size(width = 30.dp, 8.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+                modifier = Modifier.size(width = 30.dp, 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
             )
 
             Spacer(modifier = Modifier.size(8.dp))
 
             Box(
-                modifier = Modifier.size(width = 30.dp, 8.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+                modifier = Modifier.size(width = 30.dp, 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
             )
         }
 
@@ -117,8 +117,184 @@ fun OnboardScreen(
     }
 }
 
+@Composable
+fun OnboardScreen2(
+    modifier: Modifier = Modifier
+) {
+    val gradientBrush = Brush.verticalGradient(
+        colors = listOf(
+            Accent,
+            GradientBoardLight,
+            GradientBoardDark
+        )
+    )
+
+    Column(
+        modifier = modifier.fillMaxSize().background(gradientBrush),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.onboard2),
+            contentDescription = "Shoes",
+            modifier = Modifier.fillMaxWidth().height(320.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Text(
+            text = stringResource(R.string.journey),
+            style = MaterialTheme.typography.displaySmall,
+            color = Block,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = stringResource(R.string.collection),
+            style = MaterialTheme.typography.bodyMedium,
+            color = SubTextLight,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.size(width = 30.dp, height = 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Box(
+                modifier = Modifier.size(width = 45.dp, 6.dp).background(Block, RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Box(
+                modifier = Modifier.size(width = 30.dp, 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+            )
+        }
+
+        Spacer(modifier = Modifier.height(136.dp))
+
+        PrimaryButton(
+            text = stringResource(R.string.next),
+            onClick = {  },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+            style = MaterialTheme.typography.labelMedium,
+            textColor = Text,
+            backgroundColor = Block
+        )
+
+        Spacer(modifier = Modifier.size(36.dp))
+    }
+}
+
+@Composable
+fun OnboardScreen3(
+    modifier: Modifier = Modifier
+) {
+    val gradientBrush = Brush.verticalGradient(
+        colors = listOf(
+            Accent,
+            GradientBoardLight,
+            GradientBoardDark
+        )
+    )
+
+    Column(
+        modifier = modifier.fillMaxSize().background(gradientBrush),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.onboard3),
+            contentDescription = "Shoes",
+            modifier = Modifier.fillMaxWidth().height(320.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        Spacer(modifier = Modifier.height(60.dp))
+
+        Text(
+            text = stringResource(R.string.strength),
+            style = MaterialTheme.typography.displaySmall,
+            color = Block,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = stringResource(R.string.plant),
+            style = MaterialTheme.typography.bodyMedium,
+            color = SubTextLight,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.size(width = 30.dp, height = 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Box(
+                modifier = Modifier.size(width = 30.dp, 6.dp).background(SubTextDark, RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.size(8.dp))
+
+            Box(
+                modifier = Modifier.size(width = 45.dp, 6.dp).background(Block, RoundedCornerShape(4.dp))
+            )
+        }
+
+        Spacer(modifier = Modifier.height(136.dp))
+
+        PrimaryButton(
+            text = stringResource(R.string.next),
+            onClick = {  },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+            style = MaterialTheme.typography.labelMedium,
+            textColor = Text,
+            backgroundColor = Block
+        )
+
+        Spacer(modifier = Modifier.size(36.dp))
+    }
+}
+
 @Preview
 @Composable
-private fun OnboardScreenPreview() {
-    OnboardScreen()
+private fun OnboardScreen1Preview() {
+    OnboardScreen1()
+}
+
+@Preview
+@Composable
+private fun OnboardScreen2Preview() {
+    OnboardScreen2()
+}
+
+@Preview
+@Composable
+private fun OnboardScreen3Preview() {
+    OnboardScreen3()
 }

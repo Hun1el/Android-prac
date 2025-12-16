@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">AndroidPracApp</string>
     <string name="welcome">WELCOME</string>
-    <string name="journey">Let’s Start Journey</string>
+    <string name="journey">Let’s Start \nJourney</string>
     <string name="collection">Smart, Gorgeous and Fashionable Collection Explor Now</string>
-    <string name="strength">You Have the Power To</string>
-    <string name="plant">There Are Many Beautiful And Attractive Plants To Your Room</string>
+    <string name="strength">You Have The Power To</string>
+    <string name="plant">There Are Many Beautiful And Attractive \nPlants To Your Room</string>
     <string name="hello">Hello Again!</string>
     <string name="enter_data">Fill your details</string>
     <string name="email">Email Address</string>

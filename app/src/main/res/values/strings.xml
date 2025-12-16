@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">AndroidPracApp</string>
     <string name="welcome">ДОБРО \nПОЖАЛОВАТЬ</string>
-    <string name="journey">Начнем путешествие</string>
-    <string name="collection">Умная, великолепная и модная коллекция Изучите сейчас</string>
-    <string name="strength">У вас есть сила, чтобы</string>
-    <string name="plant">В вашей комнате много красивых и привлекательных растений</string>
+    <string name="journey">Начнем \nпутешествие</string>
+    <string name="collection">Умная, великолепная и модная \nколлекция Изучите сейчас</string>
+    <string name="strength">У Вас Eсть Сила, Чтобы</string>
+    <string name="plant">В вашей комнате много красивых и \nпривлекательных растений</string>
     <string name="hello">Привет!</string>
     <string name="enter_data">Заполните Свои данные</string>
     <string name="email">Email</string>
