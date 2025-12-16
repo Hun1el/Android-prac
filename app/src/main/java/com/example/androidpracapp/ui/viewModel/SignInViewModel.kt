@@ -1,3 +1,10 @@
+/**
+ * ViewModel для управления аутентификацией
+ *
+ * @author Солоников Антон
+ * @date 16.12.2025
+ */
+
 package com.example.androidpracapp.ui.viewModel
 
 import android.content.Context
@@ -5,6 +12,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
+import com.example.androidpracapp.data.services.ResetPasswordRequest
 import com.example.androidpracapp.domain.models.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -55,6 +63,33 @@ class SignInViewModel : ViewModel() {
                 Log.e("signIn", "Exception: ${e.message}", e)
                 e.printStackTrace()
                 signInError.value = "Ошибка подключения: ${e.message}"
+                signInSuccess.value = false
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun sendPasswordResetCode(email: String, context: Context) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                Log.d("sendPasswordReset", "Отправка ссылки на: $email")
+                val request = ResetPasswordRequest(email)
+                val response = RetrofitInstance.userManagementService.resetPasswordForEmail(request)
+
+                if (response.isSuccessful) {
+                    Log.d("sendPasswordReset", "Ссылка успешно отправлена")
+                    signInSuccess.value = true
+                    signInError.value = null
+                } else {
+                    Log.e("sendPasswordReset", "Ошибка: ${response.code()}")
+                    signInError.value = "Ошибка при отправке. Попробуйте еще раз."
+                    signInSuccess.value = false
+                }
+            } catch (e: Exception) {
+                Log.e("sendPasswordReset", "Exception: ${e.message}", e)
+                signInError.value = e.message ?: "Неизвестная ошибка"
                 signInSuccess.value = false
             } finally {
                 isLoading.value = false

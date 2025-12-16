@@ -56,8 +56,8 @@ import com.example.androidpracapp.ui.viewModel.SignInViewModel
 fun CreateNewPasswordScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = viewModel(),
-    onForgotPasswordClick: () -> Unit = {},
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onSuccess: () -> Unit = {}
 ) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -227,6 +227,12 @@ fun CreateNewPasswordScreen(
             text = stringResource(R.string.save),
             onClick = {
                 viewModel.signIn(password, confirmPassword, context)
+
+                if (password != confirmPassword) {
+                    showErrorDialog = true
+                } else {
+                    showErrorDialog = false
+                }
             },
             enabled = !isLoading,
             style = MaterialTheme.typography.labelMedium,

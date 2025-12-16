@@ -33,18 +33,22 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
@@ -53,20 +57,25 @@ import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
+import com.example.androidpracapp.ui.viewModel.SignInViewModel
 
 // Экран восстановления пароля
 @Composable
 fun ForgotPasswordScreen(
     modifier: Modifier = Modifier,
+    viewModel: SignInViewModel = viewModel(),
     onBackClick: () -> Unit = {},
-    onNavigateToOTP: () -> Unit = {}
+    onNavigateToOTP: (String) -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var showErrorDialog by remember { mutableStateOf(false) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
 
-    // Функция для проверки корректности почты
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val errorMessage = viewModel.signInError.collectAsState().value
+    val isSuccess = viewModel.signInSuccess.collectAsState().value
+    val context = LocalContext.current
+
+    // Функция для проверки email
     fun checkEmail(email: String): String? {
         val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
 
@@ -78,28 +87,35 @@ fun ForgotPasswordScreen(
     }
 
     // Диалог ошибки
-    if (showErrorDialog) {
+    if (showErrorDialog && errorMessage != null) {
         MessageDialog(
             title = "Ошибка",
             description = errorMessage,
-            onOk = { showErrorDialog = false }
+            onOk = {
+                showErrorDialog = false
+                viewModel.clearError()
+            }
         )
     }
 
-    // Диалог успеха
-    if (showSuccessDialog) {
-        MessageDialog(
-            title = stringResource(R.string.check_email1),
-            description = stringResource(R.string.email_code),
-            icon = painterResource(id = R.drawable.email),
-            showButtons = false,
-            onOk = { onNavigateToOTP() }
-        )
+    // Обработка успеха
+    LaunchedEffect(isSuccess) {
+        if (isSuccess && email.isNotEmpty()) {
+            onNavigateToOTP(email)
+            viewModel.clearSuccess()
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            showErrorDialog = true
+        }
     }
 
     Column(
         modifier = modifier.fillMaxSize().padding(20.dp).padding(top = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -107,12 +123,13 @@ fun ForgotPasswordScreen(
         ) {
             BackButton(onClick = { onBackClick() })
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = stringResource(id = R.string.forgot_password),
-            style = MaterialTheme.typography.displayMedium
+            style = MaterialTheme.typography.displayMedium,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -125,7 +142,16 @@ fun ForgotPasswordScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(38.dp))
+
+        Text(
+            text = stringResource(id = R.string.email),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = email,
@@ -151,17 +177,14 @@ fun ForgotPasswordScreen(
         PrimaryButton(
             text = stringResource(R.string.send),
             onClick = {
-                val emailError = checkEmail(email)
-
-                if (emailError != null) {
-                    errorMessage = emailError
-                    showErrorDialog = true
+                val error = checkEmail(email)
+                if (error != null) {
+                    viewModel.signInError.value = error
                 } else {
-                    // Email корректный - показываем диалог
-                    showSuccessDialog = true
+                    viewModel.sendPasswordResetCode(email, context)
                 }
             },
-            enabled = true,
+            enabled = !isLoading && email.isNotEmpty(),
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
 import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
@@ -41,15 +42,28 @@ fun NavigationApp(navController: NavHostController) {
 
         composable(NavRoute.ForgotPassword.route) {
             ForgotPasswordScreen(
+                viewModel = signInViewModel,
                 onBackClick = { navController.popBackStack() },
-                onNavigateToOTP = { navController.navigate(NavRoute.VerifyOTP.route) }
+                onNavigateToOTP = { email ->
+                    navController.navigate("${NavRoute.VerifyOTP.route}?email=$email")
+                }
             )
         }
 
-        composable(NavRoute.VerifyOTP.route) {
+        composable("${NavRoute.VerifyOTP.route}?email={email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
             VerificationScreen(
+                email = email,
+                viewModel = signInViewModel,
                 onBackClick = { navController.popBackStack() },
-                onSuccess = { navController.navigate(NavRoute.Home.route) }
+                onSuccess = { navController.navigate(NavRoute.CreateNewPassword.route) }
+            )
+        }
+
+        composable(NavRoute.CreateNewPassword.route) {
+            CreateNewPasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onSuccess = { navController.navigate(NavRoute.SignIn.route) }
             )
         }
     }

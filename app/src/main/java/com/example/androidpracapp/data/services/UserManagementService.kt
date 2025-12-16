@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhcmZybXJ0dmRycW1xZmx0eWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3OTU0NzYsImV4cCI6MjA4MTM3MTQ3Nn0.5fth8PNr90GBITRf5topSEyV68ebKApIZTw6HV9VlIU"
 
@@ -18,4 +19,12 @@ interface UserManagementService {
     @Headers("apikey: $API_KEY")
     @POST("auth/v1/token?grant_type=password")
     suspend fun signIn(@Body user: User): Response<SignUpResponse>
+
+    @Headers("apikey: $API_KEY")
+    @POST("auth/v1/recover")
+    suspend fun resetPasswordForEmail(@Body request: ResetPasswordRequest): Response<Void>
 }
+
+data class ResetPasswordRequest(
+    val email: String
+)

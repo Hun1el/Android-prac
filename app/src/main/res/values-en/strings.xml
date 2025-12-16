@@ -26,9 +26,9 @@
     <string name="check_email1">Check your email</string>
     <string name="email_code">We Have Send Password Recovery Code In Your Email</string>
     <string name="otp">OTP Verification</string>
-    <string name="check_email2">Please check your email to see the verification code</string>
+    <string name="check_email2">Please Check Your Email To See The Verification Code</string>
     <string name="otp_code">OTP Code</string>
-    <string name="new_password1">Set new password</string>
+    <string name="new_password1">Set New Password</string>
     <string name="new_password2">Set a New Password to Login to Your Account</string>
     <string name="password_confirmation">Confirm password</string>
     <string name="main">Explore</string>
@@ -66,8 +66,8 @@
     <string name="change_photo">Change Profile Picture</string>
     <string name="first_name">Your Name</string>
     <string name="last_name">Last Name</string>
-    <string name="save">save Now</string>
-    <string name="confirm">confirm</string>
+    <string name="save">Save Now</string>
+    <string name="confirm">Confirm</string>
     <string name="map">Map</string>
     <string name="loyal_card">Loyalty Card</string>
 </resources>

@@ -6,4 +6,5 @@ sealed class NavRoute(val route: String) {
     object ForgotPassword : NavRoute("forgot_password")
     object Home : NavRoute("home")
     object VerifyOTP : NavRoute("verify_otp")
+    object CreateNewPassword : NavRoute("create_new_password")
 }
