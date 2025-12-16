@@ -1,12 +1,7 @@
-/**
- * Экран приветствия
- *
- * @author Солоников Антон
- * @date 16.12.2025
- */
-
 package com.example.androidpracapp.ui.screen
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -60,9 +57,10 @@ fun OnboardPagerScreen(
         count = 3,
         state = pagerState,
         modifier = modifier.fillMaxSize()
-    ) { page ->
+    ) { page -> val isSelected = pagerState.currentPage == page
         when (page) {
             0 -> OnboardScreen1(
+                isSelected = isSelected,
                 onStartClick = {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(1)
@@ -70,6 +68,7 @@ fun OnboardPagerScreen(
                 }
             )
             1 -> OnboardScreen2(
+                isSelected = isSelected,
                 onNextClick = {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(2)
@@ -77,6 +76,7 @@ fun OnboardPagerScreen(
                 }
             )
             2 -> OnboardScreen3(
+                isSelected = isSelected,
                 onStartClick = onOnboardComplete
             )
         }
@@ -86,8 +86,18 @@ fun OnboardPagerScreen(
 @Composable
 fun OnboardScreen1(
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     onStartClick: () -> Unit = {}
 ) {
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(1800)
+    )
+
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
             Accent,
@@ -97,7 +107,7 @@ fun OnboardScreen1(
     )
 
     Column(
-        modifier = modifier.fillMaxSize().background(gradientBrush),
+        modifier = modifier.fillMaxSize().background(gradientBrush).alpha(alpha),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -160,8 +170,18 @@ fun OnboardScreen1(
 @Composable
 fun OnboardScreen2(
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     onNextClick: () -> Unit = {}
 ) {
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(1800)
+    )
+
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
             Accent,
@@ -171,7 +191,7 @@ fun OnboardScreen2(
     )
 
     Column(
-        modifier = modifier.fillMaxSize().background(gradientBrush),
+        modifier = modifier.fillMaxSize().background(gradientBrush).alpha(alpha),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -243,8 +263,18 @@ fun OnboardScreen2(
 @Composable
 fun OnboardScreen3(
     modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
     onStartClick: () -> Unit = {}
 ) {
+    val alpha by animateFloatAsState(
+        targetValue = if (isSelected) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(1800)
+    )
+
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
             Accent,
@@ -254,7 +284,7 @@ fun OnboardScreen3(
     )
 
     Column(
-        modifier = modifier.fillMaxSize().background(gradientBrush),
+        modifier = modifier.fillMaxSize().background(gradientBrush).alpha(alpha),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
