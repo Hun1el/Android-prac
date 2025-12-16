@@ -12,7 +12,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CreateNewPasswordScreen()
+            AndroidPracAppTheme {
+                val navController = rememberNavController()
+                NavigationApp(navController)
+            }
         }
     }
 }
