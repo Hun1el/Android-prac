@@ -72,7 +72,7 @@ fun SignInScreen(
 
     val isLoading = viewModel.isLoading.collectAsState().value
     val errorMessage = viewModel.signInError.collectAsState().value
-    val isSuccess = viewModel.signInSuccess.collectAsState().value
+    val isSuccess by viewModel.signInSuccess.collectAsState()
     val context = LocalContext.current
 
     // Функция для проверки корректности почты
@@ -249,7 +249,16 @@ fun SignInScreen(
                 "Войти"
             },
             onClick = {
-                viewModel.signIn(email, password, context)
+                val emailError = checkEmail(email)
+                val passwordError = checkPassword(password)
+
+                if (emailError != null) {
+                    viewModel.setError(emailError)
+                } else if (passwordError != null) {
+                    viewModel.setError(passwordError)
+                } else {
+                    viewModel.signIn(email, password, context)
+                }
             },
             enabled = !isLoading,
             style = MaterialTheme.typography.labelMedium,
