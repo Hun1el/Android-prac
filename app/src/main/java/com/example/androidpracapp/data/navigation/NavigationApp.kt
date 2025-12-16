@@ -1,6 +1,5 @@
 package com.example.androidpracapp.data.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -8,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
+import com.example.androidpracapp.ui.screen.OnboardPagerScreen
 import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.screen.VerificationScreen
@@ -21,8 +21,14 @@ fun NavigationApp(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = NavRoute.SignUp.route
+        startDestination = NavRoute.Onboard.route
     ) {
+        composable(NavRoute.Onboard.route) {
+            OnboardPagerScreen(
+                onOnboardComplete = { navController.navigate(NavRoute.SignUp.route) }
+            )
+        }
+
         composable(NavRoute.SignUp.route) {
             RegisterAccountScreen(
                 viewModel = signUpViewModel,

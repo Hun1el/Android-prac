@@ -23,13 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +42,46 @@ import com.example.androidpracapp.ui.theme.GradientBoardLight
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.SubTextLight
 import com.example.androidpracapp.ui.theme.Text
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun OnboardPagerScreen(
+    modifier: Modifier = Modifier,
+    onOnboardComplete: () -> Unit = {}
+) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    HorizontalPager(
+        count = 3,
+        state = pagerState,
+        modifier = modifier.fillMaxSize()
+    ) { page ->
+        when (page) {
+            0 -> OnboardScreen1(
+                onStartClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                }
+            )
+            1 -> OnboardScreen2(
+                onNextClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(2)
+                    }
+                }
+            )
+            2 -> OnboardScreen3(
+                onStartClick = onOnboardComplete
+            )
+        }
+    }
+}
 
 @Composable
 fun OnboardScreen1(
@@ -119,7 +159,8 @@ fun OnboardScreen1(
 
 @Composable
 fun OnboardScreen2(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNextClick: () -> Unit = {}
 ) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
@@ -188,7 +229,7 @@ fun OnboardScreen2(
 
         PrimaryButton(
             text = stringResource(R.string.next),
-            onClick = {  },
+            onClick = { onNextClick() },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
             style = MaterialTheme.typography.labelMedium,
             textColor = Text,
@@ -201,7 +242,8 @@ fun OnboardScreen2(
 
 @Composable
 fun OnboardScreen3(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onStartClick: () -> Unit = {}
 ) {
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
@@ -270,7 +312,7 @@ fun OnboardScreen3(
 
         PrimaryButton(
             text = stringResource(R.string.next),
-            onClick = {  },
+            onClick = { onStartClick() },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
             style = MaterialTheme.typography.labelMedium,
             textColor = Text,
@@ -283,18 +325,6 @@ fun OnboardScreen3(
 
 @Preview
 @Composable
-private fun OnboardScreen1Preview() {
-    OnboardScreen1()
-}
-
-@Preview
-@Composable
-private fun OnboardScreen2Preview() {
-    OnboardScreen2()
-}
-
-@Preview
-@Composable
-private fun OnboardScreen3Preview() {
-    OnboardScreen3()
+private fun OnboardPagerScreenPreview() {
+    OnboardPagerScreen()
 }
