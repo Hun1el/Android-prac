@@ -1,3 +1,10 @@
+/**
+ * Экран приветствия
+ *
+ * @author Солоников Антон
+ * @date 16.12.2025
+ */
+
 package com.example.androidpracapp.ui.screen
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -111,7 +119,7 @@ fun OnboardScreen1(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Text(
             text = stringResource(R.string.welcome),
@@ -125,7 +133,7 @@ fun OnboardScreen1(
         Image(
             painter = painterResource(id = R.drawable.onboard1),
             contentDescription = "Shoes",
-            modifier = Modifier.fillMaxWidth().height(320.dp),
+            modifier = Modifier.fillMaxWidth().height(320.dp).offset(x = 10.dp),
             contentScale = ContentScale.Fit
         )
 

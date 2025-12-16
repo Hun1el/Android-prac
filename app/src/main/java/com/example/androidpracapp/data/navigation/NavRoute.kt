@@ -1,6 +1,7 @@
 package com.example.androidpracapp.data.navigation
 
 sealed class NavRoute(val route: String) {
+    object Splash : NavRoute("splash")
     object Onboard : NavRoute("onboard")
     object SignIn : NavRoute("sign_in")
     object SignUp : NavRoute("sign_up")
