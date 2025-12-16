@@ -1,3 +1,10 @@
+/**
+ * Компонент сообщения
+ *
+ * @author Солоников Антон
+ * @date 15.12.2025
+ */
+
 package com.example.androidpracapp.ui.components
 
 import androidx.compose.foundation.background

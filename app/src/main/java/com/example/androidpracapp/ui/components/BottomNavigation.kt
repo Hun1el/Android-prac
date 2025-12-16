@@ -1,3 +1,10 @@
+/**
+ * Компонент навигации
+ *
+ * @author Солоников Антон
+ * @date 16.12.2025
+ */
+
 package com.example.androidpracapp.ui.components
 
 import androidx.compose.foundation.Image
