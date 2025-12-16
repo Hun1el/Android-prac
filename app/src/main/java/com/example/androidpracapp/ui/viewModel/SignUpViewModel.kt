@@ -48,7 +48,7 @@ class SignUpViewModel : ViewModel() {
 
                     if (errorBodyString != null && errorBodyString.isNotEmpty()) {
                         errorMsg = when {
-                            errorBodyString.contains("email_address_invalid") -> "Email должен быть минимум 3 символа перед @. Пример: abc@gmail.com"
+                            errorBodyString.contains("email_address_invalid") -> "Email должен быть минимум 6 символа перед @. Пример: abc@gmail.com"
                             errorBodyString.contains("user_already_exists") -> "Этот email уже зарегистрирован"
                             errorBodyString.contains("weak_password") -> "Введенный пароль слишком короткий! Минимальная длина пароля 6 символов."
                             errorBodyString.contains("over_email_send_rate_limit") -> "Слишком много попыток. Используйте другой email или подождите немного."

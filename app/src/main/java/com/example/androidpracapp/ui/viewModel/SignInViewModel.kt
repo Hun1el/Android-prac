@@ -22,7 +22,6 @@ class SignInViewModel : ViewModel() {
     val signInSuccess = MutableStateFlow(false)
     val signInError = MutableStateFlow<String?>(null)
     val isLoading = MutableStateFlow(false)
-    val userExists = MutableStateFlow<Boolean?>(null)
 
     fun signIn(email: String, password: String, context: Context) {
         viewModelScope.launch {
@@ -71,6 +70,38 @@ class SignInViewModel : ViewModel() {
         }
     }
 
+    fun checkUserExists(email: String, context: Context) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                Log.d("checkUser", "Проверка пользователя: $email")
+
+                val dummyUser = User(email = email, password = "")
+                val response = RetrofitInstance.userManagementService.signIn(dummyUser)
+
+                val errorBodyString = response.errorBody()?.string() ?: ""
+
+                Log.d("checkUser", "Response Code: ${response.code()}")
+                Log.d("checkUser", "Error Body: $errorBodyString")
+
+                if (errorBodyString.contains("invalid_grant")) {
+                    Log.d("checkUser", "Пользователь СУЩЕСТВУЕТ, отправляем письмо")
+                    sendPasswordResetCode(email, context)
+                } else {
+                    Log.d("checkUser", "Пользователь НЕ СУЩЕСТВУЕТ")
+                    signInError.value = "Пользователь с этим email не найден"
+                    signInSuccess.value = false
+                }
+            } catch (e: Exception) {
+                Log.e("checkUser", "Exception: ${e.message}", e)
+                signInError.value = "Ошибка проверки пользователя"
+                signInSuccess.value = false
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
     fun sendPasswordResetCode(email: String, context: Context) {
         viewModelScope.launch {
             isLoading.value = true
@@ -79,21 +110,23 @@ class SignInViewModel : ViewModel() {
                 val request = ResetPasswordRequest(email)
                 val response = RetrofitInstance.userManagementService.resetPasswordForEmail(request)
 
+                Log.d("sendPasswordReset", "Response Code: ${response.code()}")
+                val errorBodyString = response.errorBody()?.string() ?: ""
+                Log.d("sendPasswordReset", "Response Body: $errorBodyString")
+
                 if (response.isSuccessful) {
-                    Log.d("sendPasswordReset", "Ссылка успешно отправлена")
+                    Log.d("sendPasswordReset", "Письмо успешно отправлено на $email")
                     signInSuccess.value = true
                     signInError.value = null
                 } else {
-                    val errorBodyString = response.errorBody()?.string() ?: ""
                     Log.e("sendPasswordReset", "Ошибка: ${response.code()}")
                     Log.e("sendPasswordReset", "Тело ошибки: $errorBodyString")
 
                     val errorMsg = when {
-                        response.code() == 429 -> "Слишком много попыток. Подождите несколько минут."
-                        response.code() == 400 -> "Неверный email адрес"
-                        response.code() == 401 -> "Ошибка аутентификации"
-                        response.code() == 500 -> "Ошибка сервера"
-                        else -> "Ошибка при отправке (${response.code()}): $errorBodyString"
+                        response.code() == 429 -> "Письмо уже отправлено на $email. Проверьте почту."
+                        response.code() == 400 -> "Пользователь с таким email не найден"
+                        response.code() == 404 -> "Пользователь с таким email не найден"
+                        else -> "Пользователь с таким email не найден"
                     }
 
                     signInError.value = errorMsg
@@ -101,33 +134,8 @@ class SignInViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("sendPasswordReset", "Exception: ${e.message}", e)
-                Log.e("sendPasswordReset", "Full Exception: ", e)
                 signInError.value = e.message ?: "Неизвестная ошибка"
                 signInSuccess.value = false
-            } finally {
-                isLoading.value = false
-            }
-        }
-    }
-
-    fun checkUserByEmail(email: String) {
-        viewModelScope.launch {
-            isLoading.value = true
-            try {
-                Log.d("checkUser", "Проверка пользователя: $email")
-                val response = RetrofitInstance.userManagementService.checkUserExists(email)
-
-                if (response.isSuccessful) {
-                    val users = response.body() ?: emptyList()
-                    userExists.value = users.isNotEmpty()
-                    Log.d("checkUser", "Пользователь найден: ${users.isNotEmpty()}")
-                } else {
-                    Log.e("checkUser", "Ошибка: ${response.code()}")
-                    userExists.value = false
-                }
-            } catch (e: Exception) {
-                Log.e("checkUser", "Exception: ${e.message}", e)
-                userExists.value = false
             } finally {
                 isLoading.value = false
             }

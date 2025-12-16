@@ -68,17 +68,17 @@ fun ForgotPasswordScreen(
     onNavigateToOTP: (String) -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
+    var showSuccessDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val isLoading = viewModel.isLoading.collectAsState().value
-    val errorMessage = viewModel.signInError.collectAsState().value
+    val viewModelError = viewModel.signInError.collectAsState().value
     val isSuccess = viewModel.signInSuccess.collectAsState().value
     val context = LocalContext.current
 
-    // Функция для проверки email
     fun checkEmail(email: String): String? {
         val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
-
         return when {
             email.isBlank() -> "Email не может быть пустым"
             !regex.matches(email) -> "Email должен соответствовать формату: yourmaillogin@domain.ru"
@@ -90,25 +90,41 @@ fun ForgotPasswordScreen(
     if (showErrorDialog && errorMessage != null) {
         MessageDialog(
             title = "Ошибка",
-            description = errorMessage,
+            description = errorMessage!!,
             onOk = {
                 showErrorDialog = false
+                errorMessage = null
                 viewModel.clearError()
             }
         )
     }
 
-    // Обработка успеха
-    LaunchedEffect(isSuccess) {
-        if (isSuccess && email.isNotEmpty()) {
-            onNavigateToOTP(email)
-            viewModel.clearSuccess()
+    // Диалог успеха
+    if (showSuccessDialog) {
+        MessageDialog(
+            title = "Готово!",
+            description = "Письмо с кодом подтверждения отправлено на $email",
+            onOk = {
+                showSuccessDialog = false
+                viewModel.clearSuccess()
+                onNavigateToOTP(email)
+            }
+        )
+    }
+
+    // Обработка ошибки - показывает диалог ошибки
+    LaunchedEffect(viewModelError) {
+        if (viewModelError != null) {
+            showSuccessDialog = false
+            errorMessage = viewModelError
+            showErrorDialog = true
         }
     }
 
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            showErrorDialog = true
+    LaunchedEffect(isSuccess) {
+        if (isSuccess && email.isNotEmpty()) {
+            showErrorDialog = false
+            showSuccessDialog = true
         }
     }
 
@@ -179,7 +195,8 @@ fun ForgotPasswordScreen(
             onClick = {
                 val error = checkEmail(email)
                 if (error != null) {
-                    viewModel.signInError.value = error
+                    errorMessage = error
+                    showErrorDialog = true
                 } else {
                     viewModel.sendPasswordResetCode(email, context)
                 }
