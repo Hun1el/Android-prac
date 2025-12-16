@@ -38,15 +38,18 @@ fun PrimaryButton(
     width: Modifier = Modifier.fillMaxWidth(),
     cornerRadius: Dp = 14.dp,
     style: TextStyle = MaterialTheme.typography.labelMedium,
-    textColor: Color = Background
+    textColor: Color = Background,
+    backgroundColor: Color = Accent,
+    disabledBackgroundColor: Color = Disable
 ) {
     Button(
-        onClick = onClick, modifier = modifier.height(height).then(width),
+        onClick = onClick,
+        modifier = modifier.height(height).then(width),
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Accent,
-            contentColor = Background,
-            disabledContainerColor = Disable,
+            containerColor = backgroundColor,
+            contentColor = textColor,
+            disabledContainerColor = disabledBackgroundColor,
             disabledContentColor = Background
         ),
         shape = RoundedCornerShape(cornerRadius)

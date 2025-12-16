@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AndroidPracApp</string>
-    <string name="welcome">Wellcome</string>
+    <string name="welcome">WELCOME</string>
     <string name="journey">Let’s Start Journey</string>
     <string name="collection">Smart, Gorgeous and Fashionable Collection Explor Now</string>
     <string name="strength">You Have the Power To</string>
