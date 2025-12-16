@@ -23,7 +23,16 @@ interface UserManagementService {
     @Headers("apikey: $API_KEY")
     @POST("auth/v1/recover")
     suspend fun resetPasswordForEmail(@Body request: ResetPasswordRequest): Response<Void>
+
+    @Headers("apikey: $API_KEY")
+    @POST("rest/v1/users")
+    suspend fun checkUserExists(@Query("email") email: String): Response<List<UserCheckResponse>>
 }
+
+data class UserCheckResponse(
+    val id: String,
+    val email: String
+)
 
 data class ResetPasswordRequest(
     val email: String

@@ -22,6 +22,7 @@ class SignInViewModel : ViewModel() {
     val signInSuccess = MutableStateFlow(false)
     val signInError = MutableStateFlow<String?>(null)
     val isLoading = MutableStateFlow(false)
+    val userExists = MutableStateFlow<Boolean?>(null)
 
     fun signIn(email: String, password: String, context: Context) {
         viewModelScope.launch {
@@ -83,14 +84,50 @@ class SignInViewModel : ViewModel() {
                     signInSuccess.value = true
                     signInError.value = null
                 } else {
+                    val errorBodyString = response.errorBody()?.string() ?: ""
                     Log.e("sendPasswordReset", "Ошибка: ${response.code()}")
-                    signInError.value = "Ошибка при отправке. Попробуйте еще раз."
+                    Log.e("sendPasswordReset", "Тело ошибки: $errorBodyString")
+
+                    val errorMsg = when {
+                        response.code() == 429 -> "Слишком много попыток. Подождите несколько минут."
+                        response.code() == 400 -> "Неверный email адрес"
+                        response.code() == 401 -> "Ошибка аутентификации"
+                        response.code() == 500 -> "Ошибка сервера"
+                        else -> "Ошибка при отправке (${response.code()}): $errorBodyString"
+                    }
+
+                    signInError.value = errorMsg
                     signInSuccess.value = false
                 }
             } catch (e: Exception) {
                 Log.e("sendPasswordReset", "Exception: ${e.message}", e)
+                Log.e("sendPasswordReset", "Full Exception: ", e)
                 signInError.value = e.message ?: "Неизвестная ошибка"
                 signInSuccess.value = false
+            } finally {
+                isLoading.value = false
+            }
+        }
+    }
+
+    fun checkUserByEmail(email: String) {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                Log.d("checkUser", "Проверка пользователя: $email")
+                val response = RetrofitInstance.userManagementService.checkUserExists(email)
+
+                if (response.isSuccessful) {
+                    val users = response.body() ?: emptyList()
+                    userExists.value = users.isNotEmpty()
+                    Log.d("checkUser", "Пользователь найден: ${users.isNotEmpty()}")
+                } else {
+                    Log.e("checkUser", "Ошибка: ${response.code()}")
+                    userExists.value = false
+                }
+            } catch (e: Exception) {
+                Log.e("checkUser", "Exception: ${e.message}", e)
+                userExists.value = false
             } finally {
                 isLoading.value = false
             }
