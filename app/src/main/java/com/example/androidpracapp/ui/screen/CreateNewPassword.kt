@@ -7,6 +7,7 @@
 
 package com.example.androidpracapp.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +57,6 @@ import com.example.androidpracapp.ui.viewModel.SignInViewModel
 @Composable
 fun CreateNewPasswordScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onSuccess: () -> Unit = {}
 ) {
@@ -63,28 +64,16 @@ fun CreateNewPasswordScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var errorText by remember { mutableStateOf("") }
 
-    val isLoading = viewModel.isLoading.collectAsState().value
-    val errorMessage = viewModel.signInError.collectAsState().value
-    val isSuccess = viewModel.signInSuccess.collectAsState().value
-    val context = LocalContext.current
+    Log.d("CreateNewPasswordScreen", "onSuccess = $onSuccess")
 
-    // Функция для проверки пароля
-    fun checkPassword(passwordValue: String): String? {
-        return when {
-            passwordValue.isBlank() -> "Пароль не может быть пустым"
-            else -> null
-        }
-    }
-
-    // Диалог ошибки
-    if (showErrorDialog && errorMessage != null) {
+    if (showErrorDialog) {
         MessageDialog(
             title = "Ошибка",
-            description = errorMessage,
+            description = errorText,
             onOk = {
                 showErrorDialog = false
-                viewModel.clearError()
             }
         )
     }
@@ -115,7 +104,8 @@ fun CreateNewPasswordScreen(
             text = stringResource(id = R.string.new_password2),
             color = SubTextDark,
             style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(38.dp))
@@ -150,8 +140,7 @@ fun CreateNewPasswordScreen(
                         painter = painterResource(
                             id = if (isPasswordVisible) {
                                 R.drawable.eye_open
-                            }
-                            else {
+                            } else {
                                 R.drawable.eye_close
                             }
                         ),
@@ -226,15 +215,29 @@ fun CreateNewPasswordScreen(
         PrimaryButton(
             text = stringResource(R.string.save),
             onClick = {
-                viewModel.signIn(password, confirmPassword, context)
-
-                if (password != confirmPassword) {
-                    showErrorDialog = true
-                } else {
-                    showErrorDialog = false
+                when {
+                    password.isEmpty() -> {
+                        errorText = "Пароль не может быть пустым"
+                        showErrorDialog = true
+                    }
+                    confirmPassword.isEmpty() -> {
+                        errorText = "Подтверждение пароля не может быть пустым"
+                        showErrorDialog = true
+                    }
+                    password.length < 6 -> {
+                        errorText = "Пароль должен содержать минимум 6 символов"
+                        showErrorDialog = true
+                    }
+                    password != confirmPassword -> {
+                        errorText = "Пароли не совпадают"
+                        showErrorDialog = true
+                    }
+                    else -> {
+                        onSuccess()
+                    }
                 }
             },
-            enabled = !isLoading,
+            enabled = password.isNotEmpty() && confirmPassword.isNotEmpty(),
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )

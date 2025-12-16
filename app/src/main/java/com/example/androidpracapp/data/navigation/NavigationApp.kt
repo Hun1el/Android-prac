@@ -1,5 +1,6 @@
 package com.example.androidpracapp.data.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -57,13 +58,6 @@ fun NavigationApp(navController: NavHostController) {
                 viewModel = signInViewModel,
                 onBackClick = { navController.popBackStack() },
                 onSuccess = { navController.navigate(NavRoute.CreateNewPassword.route) }
-            )
-        }
-
-        composable(NavRoute.CreateNewPassword.route) {
-            CreateNewPasswordScreen(
-                onBackClick = { navController.popBackStack() },
-                onSuccess = { navController.navigate(NavRoute.SignIn.route) }
             )
         }
     }
