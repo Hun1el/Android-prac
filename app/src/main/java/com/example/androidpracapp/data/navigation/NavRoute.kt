@@ -13,4 +13,5 @@ sealed class NavRoute(val route: String) {
     object Favorite : NavRoute("favorite")
     object Orders : NavRoute("orders")
     object Profile : NavRoute("profile")
+    object Catalog : NavRoute("catalog")
 }

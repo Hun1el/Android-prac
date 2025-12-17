@@ -16,6 +16,7 @@ import com.example.androidpracapp.R
 import androidx.navigation.compose.composable
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
+import com.example.androidpracapp.ui.screen.CatalogScreen
 import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
 import com.example.androidpracapp.ui.screen.HomeScreen
@@ -25,6 +26,7 @@ import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.screen.SplashScreen
 import com.example.androidpracapp.ui.screen.VerificationScreen
+import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -32,6 +34,7 @@ import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 fun NavigationApp(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signInViewModel: SignInViewModel = viewModel()
+    val catalogViewModel: CatalogViewModel = viewModel()
 
     fun navigateToTab(index: Int) {
         val route = when (index) {
@@ -127,8 +130,17 @@ fun NavigationApp(navController: NavHostController) {
 
         composable(NavRoute.Home.route) {
             HomeScreen(
+                viewModel = catalogViewModel,
                 selectedTabIndex = 0,
-                onTabSelected = { index -> navigateToTab(index) }
+                onTabSelected = { index -> navigateToTab(index) },
+                onCategoryClick = { navController.navigate(NavRoute.Catalog.route) }
+            )
+        }
+
+        composable(NavRoute.Catalog.route) {
+            CatalogScreen(
+                viewModel = catalogViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
