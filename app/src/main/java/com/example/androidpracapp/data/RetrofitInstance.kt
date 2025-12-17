@@ -1,6 +1,7 @@
 package com.example.androidpracapp.data
 
 import com.example.androidpracapp.data.services.CatalogManagementService
+import com.example.androidpracapp.data.services.FavoriteManagementService
 import com.example.androidpracapp.data.services.ProfileManagementService
 import com.example.androidpracapp.data.services.UserManagementService
 import okhttp3.OkHttpClient
@@ -28,4 +29,5 @@ object RetrofitInstance {
     val userManagementService = retrofit.create(UserManagementService::class.java)
     val profileManagementService = retrofit.create(ProfileManagementService::class.java)
     val catalogManagementService = retrofit.create(CatalogManagementService::class.java)
+    val favoriteManagementService = retrofit.create(FavoriteManagementService::class.java)
 }

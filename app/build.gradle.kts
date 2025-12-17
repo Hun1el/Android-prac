@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.accompanist.pager)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

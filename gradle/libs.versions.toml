@@ -15,6 +15,7 @@ retrofit = "3.0.0"
 livedata = "1.9.4"
 navigationComposeVersion = "2.9.5"
 foundation = "1.10.0"
+lifecycleViewmodelKtx = "2.10.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -39,6 +40,7 @@ gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrof
 livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "livedata" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
