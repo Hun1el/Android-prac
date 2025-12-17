@@ -88,10 +88,6 @@ fun HomeScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(categories) {
-        if (selectedCategory == null && categories.isNotEmpty()) {
-            viewModel.selectCategory(categories.first())
-        }
-
         viewModel.resetCategory()
     }
 
@@ -280,17 +276,15 @@ fun HomeScreen(
                     }
 
                     // Сетка товаров
-                    items(products.size) { index ->
-                        val product = products[index]
+                    val popularProducts = products.filter { it.is_best_seller == true }
+
+                    items(popularProducts.size) { index ->
+                        val product = popularProducts[index]
 
                         ProductCard(
                             data = ProductCardData(
                                 imageRes = R.drawable.air_max,
-                                label = if (product.is_best_seller == true) {
-                                    "BEST SELLER"
-                                } else {
-                                    ""
-                                },
+                                label = "BEST SELLER",
                                 title = product.title,
                                 price = "₽${product.cost.toInt()}",
                                 isFavorite = false,

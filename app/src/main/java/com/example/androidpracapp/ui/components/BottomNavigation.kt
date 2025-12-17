@@ -61,8 +61,8 @@ fun BottomNavigation(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().height(80.dp).background(
-                    color = containerColor
-                ).padding(horizontal = 16.dp, vertical = 0.dp),
+                color = containerColor
+            ).padding(horizontal = 16.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -74,7 +74,11 @@ fun BottomNavigation(
                 repeat(2) { index ->
                     if (index < items.size) {
                         Box(
-                            modifier = Modifier.size(48.dp).clickable { onTabSelected(index) },
+                            modifier = Modifier.size(48.dp).clickable(
+                                enabled = selectedTabIndex != index
+                            ) {
+                                onTabSelected(index)
+                            },
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -105,7 +109,11 @@ fun BottomNavigation(
                     val itemIndex = index + 2
                     if (itemIndex < items.size) {
                         Box(
-                            modifier = Modifier.size(48.dp).clickable { onTabSelected(itemIndex) },
+                            modifier = Modifier.size(48.dp).clickable(
+                                enabled = selectedTabIndex != itemIndex
+                            ) {
+                                onTabSelected(itemIndex)
+                            },
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -142,7 +150,7 @@ fun BottomNavigation(
                     painter = painterResource(id = fabIconRes),
                     contentDescription = "FAB",
                     modifier = Modifier.size(28.dp),
-                    colorFilter = ColorFilter.tint(Color.White)
+                    colorFilter = ColorFilter.tint(Block)
                 )
             }
         }
@@ -173,7 +181,7 @@ private fun BottomNavigationPreview() {
     )
 
     Column(
-        modifier = Modifier.background(Color.White).padding(bottom = 30.dp)
+        modifier = Modifier.background(Block).padding(bottom = 30.dp)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth().weight(1f)

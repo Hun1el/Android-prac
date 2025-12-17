@@ -71,12 +71,8 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun resetCategory() {
-        val allCat = _categories.value.find { it.id == "all" }
-        if (allCat != null) {
-            selectCategory(allCat)
-        } else if (_categories.value.isNotEmpty()) {
-            selectCategory(_categories.value.first())
-        }
+        _selectedCategory.value = null
+        _filteredProducts.value = _products.value
     }
 
     fun selectCategory(category: Category) {
