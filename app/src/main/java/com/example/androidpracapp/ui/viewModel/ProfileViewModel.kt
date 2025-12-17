@@ -1,3 +1,10 @@
+/**
+ * ViewModel профиля
+ *
+ * @author Солоников Антон
+ * @date 17.12.2025
+ */
+
 package com.example.androidpracapp.ui.viewModel
 
 import android.content.Context

@@ -1,3 +1,10 @@
+/**
+ * ViewModel регистрации
+ *
+ * @author Солоников Антон
+ * @date 15.12.2025
+ */
+
 package com.example.androidpracapp.ui.viewModel
 
 import android.content.Context

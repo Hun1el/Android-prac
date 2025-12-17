@@ -75,7 +75,8 @@ fun CatalogScreen(
                     ) {
                         BackButton(onClick = {
                             onBackClick()
-                        })
+                        },
+                            backgroundColor = Block)
                     }
 
                     Text(
