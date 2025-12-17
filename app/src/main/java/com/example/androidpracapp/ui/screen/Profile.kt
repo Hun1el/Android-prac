@@ -64,6 +64,11 @@ fun ProfileScreen(
     var address by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
 
+    var initialFirstName by remember { mutableStateOf("") }
+    var initialLastName by remember { mutableStateOf("") }
+    var initialAddress by remember { mutableStateOf("") }
+    var initialPhone by remember { mutableStateOf("") }
+
     var tempImageUri by remember { mutableStateOf<Uri?>(null) }
     var newPhotoBase64 by remember { mutableStateOf<String?>(null) }
 
@@ -96,6 +101,11 @@ fun ProfileScreen(
             lastName = it.lastname ?: ""
             address = it.address ?: ""
             phone = it.phone ?: ""
+
+            initialFirstName = firstName
+            initialLastName = lastName
+            initialAddress = address
+            initialPhone = phone
         }
     }
 
@@ -266,16 +276,40 @@ fun ProfileScreen(
                 }
 
                 // Поля
-                ProfileField(stringResource(R.string.first_name), firstName, isEditing) { firstName = it }
+                ProfileField(
+                    label = stringResource(R.string.first_name),
+                    value = firstName,
+                    isEditable = isEditing,
+                    showChangeIcon = isEditing && firstName != initialFirstName,
+                    onValueChange = { firstName = it }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                ProfileField(stringResource(R.string.last_name), lastName, isEditing) { lastName = it }
+                ProfileField(
+                    label = stringResource(R.string.last_name),
+                    value = lastName,
+                    isEditable = isEditing,
+                    showChangeIcon = isEditing && lastName != initialLastName,
+                    onValueChange = { lastName = it }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                ProfileField(stringResource(R.string.address), address, isEditing) { address = it }
+                ProfileField(
+                    label = stringResource(R.string.address),
+                    value = address,
+                    isEditable = isEditing,
+                    showChangeIcon = isEditing && address != initialAddress,
+                    onValueChange = { address = it }
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                ProfileField(stringResource(R.string.phone_number), phone, isEditing) { phone = it }
+                ProfileField(
+                    label = stringResource(R.string.phone_number),
+                    value = phone,
+                    isEditable = isEditing,
+                    showChangeIcon = isEditing && phone != initialPhone,
+                    onValueChange = { phone = it }
+                )
 
                 if (isEditing) {
                     Spacer(modifier = Modifier.height(24.dp))
@@ -306,6 +340,7 @@ fun ProfileField(
     label: String,
     value: String,
     isEditable: Boolean,
+    showChangeIcon: Boolean = false,
     onValueChange: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -335,7 +370,19 @@ fun ProfileField(
             ),
             textStyle = AppTypography.labelMedium.copy(
                 color = Text
-            )
+            ),
+            trailingIcon = if (showChangeIcon) {
+                {
+                    Icon(
+                        painter = painterResource(R.drawable.edit_mark),
+                        contentDescription = "Changed",
+                        tint = Accent,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            } else {
+                null
+            }
         )
     }
 }
