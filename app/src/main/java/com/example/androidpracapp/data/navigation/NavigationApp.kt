@@ -18,6 +18,7 @@ import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
 import com.example.androidpracapp.ui.screen.CatalogScreen
 import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
+import com.example.androidpracapp.ui.screen.FavoriteScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
 import com.example.androidpracapp.ui.screen.HomeScreen
 import com.example.androidpracapp.ui.screen.OnboardPagerScreen
@@ -27,6 +28,7 @@ import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.screen.SplashScreen
 import com.example.androidpracapp.ui.screen.VerificationScreen
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
+import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -145,7 +147,33 @@ fun NavigationApp(navController: NavHostController) {
         }
 
         composable(NavRoute.Favorite.route) {
-            PlaceholderScreen(stringResource(R.string.favorite), 1) { index -> navigateToTab(index) }
+            val favoriteViewModel: FavoriteViewModel = viewModel()
+
+            androidx.compose.material3.Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 1,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = {
+                            navController.navigate(NavRoute.Orders.route)
+                        },
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    FavoriteScreen(
+                        viewModel = favoriteViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
         }
 
         composable(NavRoute.Orders.route) {

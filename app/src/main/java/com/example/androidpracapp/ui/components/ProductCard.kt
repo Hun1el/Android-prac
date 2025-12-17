@@ -66,18 +66,18 @@ fun ProductCard(
     data: ProductCardData,
     modifier: Modifier = Modifier
 ) {
-    var isFavorite by remember { mutableStateOf(data.isFavorite) }
-    var isInCart by remember { mutableStateOf(data.isInCart) }
+    var isFavorite by remember(data.isFavorite) { mutableStateOf(data.isFavorite) }
+    var isInCart by remember(data.isInCart) { mutableStateOf(data.isInCart) }
 
     Box(
         modifier = modifier.size(180.dp).shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(12.dp),
-                clip = false
-            ).background(
-                color = Block,
-                shape = RoundedCornerShape(12.dp)
-            )
+            elevation = 4.dp,
+            shape = RoundedCornerShape(12.dp),
+            clip = false
+        ).background(
+            color = Block,
+            shape = RoundedCornerShape(12.dp)
+        )
     ) {
         Column(
             modifier = Modifier.size(180.dp),
@@ -159,17 +159,17 @@ fun ProductCard(
 
                 Box(
                     modifier = Modifier.fillMaxHeight().size(30.dp).background(
-                            color = Accent,
-                            shape = RoundedCornerShape(
-                                topStart = 12.dp,
-                                bottomStart = 0.dp,
-                                bottomEnd = 12.dp,
-                                topEnd = 0.dp
-                            )
-                        ).clickable {
-                            isInCart = !isInCart
-                            data.onAddClick()
-                        },
+                        color = Accent,
+                        shape = RoundedCornerShape(
+                            topStart = 12.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 12.dp,
+                            topEnd = 0.dp
+                        )
+                    ).clickable {
+                        isInCart = !isInCart
+                        data.onAddClick()
+                    },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

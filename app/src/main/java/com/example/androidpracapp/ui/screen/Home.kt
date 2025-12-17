@@ -47,14 +47,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.data.services.Product
@@ -69,12 +67,14 @@ import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.Text
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
+import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: CatalogViewModel = viewModel(),
+    favoriteViewModel: FavoriteViewModel = viewModel(),
     onProductClick: (Product) -> Unit = {},
     selectedTabIndex: Int = 0,
     onCategoryClick: () -> Unit = {},
@@ -87,8 +87,15 @@ fun HomeScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    val favorites by favoriteViewModel.favorites.collectAsState()
+    val favoriteIds = remember(favorites) { favorites.map { it.id }.toSet() }
+
     LaunchedEffect(categories) {
         viewModel.resetCategory()
+    }
+
+    LaunchedEffect(Unit) {
+        favoriteViewModel.loadFavorites()
     }
 
     Scaffold(
@@ -112,13 +119,11 @@ fun HomeScreen(
         Column(
             modifier = modifier.fillMaxSize().padding(padding).background(Background)
         ) {
-            // Верхняя панель и поиск
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Spacer(modifier = Modifier.height(5.dp))
 
-                // Заголовок и иконка меню
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -132,7 +137,6 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Поиск и Фильтр
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -204,7 +208,6 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.weight(1f)
                 ) {
-                    // Категории
                     item(span = { GridItemSpan(2) }) {
                         Column {
                             Text(
@@ -232,9 +235,9 @@ fun HomeScreen(
                                             },
                                             shape = RoundedCornerShape(8.dp)
                                         ).padding(horizontal = 20.dp).clickable {
-                                                viewModel.selectCategory(cat)
-                                                onCategoryClick()
-                                            },
+                                            viewModel.selectCategory(cat)
+                                            onCategoryClick()
+                                        },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
@@ -252,7 +255,6 @@ fun HomeScreen(
 
                             Spacer(modifier = Modifier.height(24.dp))
 
-                            // Популярное
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -275,11 +277,11 @@ fun HomeScreen(
                         }
                     }
 
-                    // Сетка товаров
                     val popularProducts = products.filter { it.is_best_seller == true }
 
                     items(popularProducts.size) { index ->
                         val product = popularProducts[index]
+                        val isFavorite = favoriteIds.contains(product.id)
 
                         ProductCard(
                             data = ProductCardData(
@@ -287,14 +289,20 @@ fun HomeScreen(
                                 label = "BEST SELLER",
                                 title = product.title,
                                 price = "₽${product.cost.toInt()}",
-                                isFavorite = false,
-                                isInCart = false
+                                isFavorite = isFavorite,
+                                isInCart = false,
+                                onFavoriteClick = {
+                                    if (isFavorite) {
+                                        favoriteViewModel.removeFromFavorites(product)
+                                    } else {
+                                        favoriteViewModel.addToFavorites(product)
+                                    }
+                                }
                             ),
                             modifier = Modifier.clickable { onProductClick(product) }
                         )
                     }
 
-                    // Акции
                     item(span = { GridItemSpan(2) }) {
                         Column(
                             modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 16.dp)
@@ -318,7 +326,6 @@ fun HomeScreen(
                                 )
                             }
 
-                            // Картинка акции
                             Box(
                                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
                             ) {
@@ -339,10 +346,4 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun HomeScreenPreview() {
-    HomeScreen()
 }

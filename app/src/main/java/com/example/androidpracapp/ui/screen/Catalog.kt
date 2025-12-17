@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,8 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -47,11 +47,13 @@ import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Text
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
+import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 
 @Composable
 fun CatalogScreen(
     modifier: Modifier = Modifier,
     viewModel: CatalogViewModel = viewModel(),
+    favoriteViewModel: FavoriteViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     onProductClick: (Product) -> Unit = {}
 ) {
@@ -60,11 +62,18 @@ fun CatalogScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    val favorites by favoriteViewModel.favorites.collectAsState()
+    val favoriteIds = remember(favorites) { favorites.map { it.id }.toSet() }
+
+    LaunchedEffect(Unit) {
+        favoriteViewModel.loadFavorites()
+    }
+
     Scaffold(
         containerColor = Background,
         topBar = {
             Column(
-                modifier = Modifier.fillMaxWidth().background(Background).padding(horizontal = 20.dp).padding(top = 48.dp)
+                modifier = Modifier.fillMaxWidth().background(Background).padding(horizontal = 20.dp).padding(top = 60.dp)
             ) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -99,13 +108,13 @@ fun CatalogScreen(
 
                         Box(
                             modifier = Modifier.height(40.dp).background(
-                                    color = if (isSelected) {
-                                        Accent
-                                    } else {
-                                        Block
-                                    },
-                                    shape = RoundedCornerShape(8.dp)
-                                ).padding(horizontal = 20.dp).clickable { viewModel.selectCategory(cat) },
+                                color = if (isSelected) {
+                                    Accent
+                                } else {
+                                    Block
+                                },
+                                shape = RoundedCornerShape(8.dp)
+                            ).padding(horizontal = 20.dp).clickable { viewModel.selectCategory(cat) },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -136,6 +145,7 @@ fun CatalogScreen(
                 ) {
                     items(products.size) { index ->
                         val product = products[index]
+                        val isFavorite = favoriteIds.contains(product.id)
 
                         ProductCard(
                             data = ProductCardData(
@@ -147,8 +157,15 @@ fun CatalogScreen(
                                 },
                                 title = product.title,
                                 price = "₽${product.cost.toInt()}",
-                                isFavorite = false,
-                                isInCart = false
+                                isFavorite = isFavorite,
+                                isInCart = false,
+                                onFavoriteClick = {
+                                    if (isFavorite) {
+                                        favoriteViewModel.removeFromFavorites(product)
+                                    } else {
+                                        favoriteViewModel.addToFavorites(product)
+                                    }
+                                }
                             ),
                             modifier = Modifier.clickable { onProductClick(product) }
                         )
@@ -157,10 +174,4 @@ fun CatalogScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun CatalogScreenPreview() {
-    CatalogScreen()
 }

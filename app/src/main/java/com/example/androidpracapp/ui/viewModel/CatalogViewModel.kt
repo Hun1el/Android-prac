@@ -63,7 +63,7 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
                     _filteredProducts.value = prods
                 }
             } catch (e: Exception) {
-                Log.e("CatalogVM", "Error loading data", e)
+                Log.e("Catalog", "Error loading data", e)
             } finally {
                 _isLoading.value = false
             }
