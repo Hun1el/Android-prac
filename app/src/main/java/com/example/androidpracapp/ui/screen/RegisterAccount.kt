@@ -301,7 +301,11 @@ fun RegisterAccountScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         PrimaryButton(
-            text = if (isLoading) "Загрузка..." else stringResource(id = R.string.sign_up2),
+            text = if (isLoading) {
+                stringResource(R.string.load)
+            } else {
+                stringResource(id = R.string.sign_up2)
+            },
             onClick = {
                 val nameError = checkName(name)
                 val emailError = checkEmail(email)
@@ -325,7 +329,7 @@ fun RegisterAccountScreen(
                     }
                 }
             },
-            enabled = agreedToTerms && !isLoading,
+            enabled = agreedToTerms && !isLoading && name.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )

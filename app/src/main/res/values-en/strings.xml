@@ -75,4 +75,5 @@
     <string name="edit">Edit</string>
     <string name="done">Done</string>
     <string name="redact">Edit</string>
+    <string name="fio">No Name</string>
 </resources>

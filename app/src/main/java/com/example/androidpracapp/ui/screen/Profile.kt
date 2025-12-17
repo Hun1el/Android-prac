@@ -217,7 +217,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val displayName = if (firstName.isBlank() && lastName.isBlank()) {
-                    "No Name"
+                    stringResource(R.string.fio)
                 } else {
                     "${firstName} ${lastName}".trim()
                 }
@@ -280,8 +280,12 @@ fun ProfileScreen(
                 if (isEditing) {
                     Spacer(modifier = Modifier.height(24.dp))
                     PrimaryButton(
-                        text = stringResource(R.string.save),
-                        style = AppTypography.labelMedium,
+                        text = if (isLoading) {
+                            stringResource(R.string.load)
+                        } else {
+                            stringResource(R.string.save)
+                        },
+                        enabled = !isLoading,
                         textColor = Block,
                         onClick = {
                             viewModel.updateProfile(

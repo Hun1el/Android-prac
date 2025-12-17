@@ -74,4 +74,5 @@
     <string name="edit">Редактировать</string>
     <string name="done">Готово</string>
     <string name="redact">Изменить</string>
+    <string name="fio">Имя Фамилия</string>
 </resources>

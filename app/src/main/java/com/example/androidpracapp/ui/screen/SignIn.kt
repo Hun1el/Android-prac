@@ -260,7 +260,7 @@ fun SignInScreen(
                     viewModel.signIn(email, password, context)
                 }
             },
-            enabled = !isLoading,
+            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
             style = MaterialTheme.typography.labelMedium,
             textColor = Background
         )
