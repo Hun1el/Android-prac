@@ -174,7 +174,7 @@ fun HomeScreen(
                         Icon(
                             painter = painterResource(R.drawable.sliders),
                             contentDescription = "Filter",
-                            tint = Color.White,
+                            tint = Block,
                             modifier = Modifier.size(24.dp)
                         )
                     }

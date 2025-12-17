@@ -37,6 +37,10 @@ interface UserManagementService {
     @Headers("apikey: $API_KEY", "Content-Type: application/json", "Prefer: return=representation")
     @PATCH("rest/v1/profiles")
     suspend fun updateUserProfile(@Query("user_id") userId: String, @Body profile: UserProfileUpdate): Response<List<UserProfile>>
+
+    @Headers("apikey: $API_KEY", "Content-Type: application/json", "Prefer: return=representation")
+    @POST("rest/v1/profiles")
+    suspend fun createUserProfile(@Body profile: UserProfileCreate): Response<List<UserProfile>>
 }
 
 data class UserCheckResponse(
@@ -59,6 +63,15 @@ data class UserProfile(
 )
 
 data class UserProfileUpdate(
+    val firstname: String?,
+    val lastname: String?,
+    val address: String?,
+    val phone: String?,
+    val photo: String?
+)
+
+data class UserProfileCreate(
+    val user_id: String,
     val firstname: String?,
     val lastname: String?,
     val address: String?,

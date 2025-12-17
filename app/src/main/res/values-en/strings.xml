@@ -46,15 +46,15 @@
     <string name="checkout">Checkout</string>
     <string name="contact_info">Contact Information</string>
     <string name="address">Address</string>
-    <string name="phone_number">phone number</string>
+    <string name="phone_number">Phone number</string>
     <string name="payment_method">Payment Method</string>
-    <string name="min_ago">min ago</string>
+    <string name="min_ago">Min ago</string>
     <string name="open">OPEN</string>
     <string name="view_map">View Map</string>
     <string name="recent">Recent</string>
     <string name="yesterday">Yesterday</string>
-    <string name="more">more details</string>
-    <string name="add">added to cart</string>
+    <string name="more">More details</string>
+    <string name="add">Added to cart</string>
     <string name="to_cart">Add to Cart</string>
     <string name="success">Your Payment Is Successful</string>
     <string name="back">Back To Shopping</string>
@@ -72,4 +72,7 @@
     <string name="loyal_card">Loyalty Card</string>
     <string name="load">Loading...</string>
     <string name="loadenter">Sign In</string>
+    <string name="edit">Edit</string>
+    <string name="done">Done</string>
+    <string name="redact">Edit</string>
 </resources>

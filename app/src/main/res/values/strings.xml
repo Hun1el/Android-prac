@@ -38,16 +38,16 @@
     <string name="stock">Акции</string>
     <string name="favorite">Избранное</string>
     <string name="bucket">Корзина</string>
-    <string name="cart">товара</string>
+    <string name="cart">Товара</string>
     <string name="sub">Сумма</string>
     <string name="delivery">Доставка</string>
     <string name="total">Итого</string>
     <string name="checkout">Оформить заказ</string>
     <string name="contact_info">Контактная информация</string>
     <string name="address">Адрес</string>
-    <string name="phone_number">телефон</string>
+    <string name="phone_number">Телефон</string>
     <string name="payment_method">Способ оплаты</string>
-    <string name="min_ago">мин назад</string>
+    <string name="min_ago">Мин назад</string>
     <string name="open">Открыть</string>
     <string name="view_map">Посмотреть на карте</string>
     <string name="recent">Недавний</string>
@@ -71,4 +71,7 @@
     <string name="loyal_card">Карта лояльности</string>
     <string name="load">Загрузка...</string>
     <string name="loadenter">Войти</string>
+    <string name="edit">Редактировать</string>
+    <string name="done">Готово</string>
+    <string name="redact">Изменить</string>
 </resources>
