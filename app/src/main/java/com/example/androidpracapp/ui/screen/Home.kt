@@ -68,7 +68,9 @@ import com.example.androidpracapp.ui.theme.Text
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onProductClick: (ProductCardData) -> Unit = {}
+    onProductClick: (ProductCardData) -> Unit = {},
+    selectedTabIndex: Int = 0,
+    onTabSelected: (Int) -> Unit = {}
 ) {
     var search by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(0) }
@@ -95,8 +97,8 @@ fun HomeScreen(
                     BottomNavItem(R.drawable.orders, "Orders"),
                     BottomNavItem(R.drawable.profile, "Profile"),
                 ),
-                selectedTabIndex = selectedTab,
-                onTabSelected = { selectedTab = it },
+                selectedTabIndex = selectedTabIndex,
+                onTabSelected = onTabSelected,
                 onFabClick = {  },
                 fabIconRes = R.drawable.shoping,
                 modifier = Modifier.background(Background)

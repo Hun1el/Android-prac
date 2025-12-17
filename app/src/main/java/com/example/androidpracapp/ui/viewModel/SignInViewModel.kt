@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
-
-    // Приватные мутабельные переменные переименованы (добавлен суффикс Mutable)
     private val signInSuccessMutable = MutableStateFlow(false)
     val signInSuccess = signInSuccessMutable.asStateFlow()
 
@@ -56,16 +54,11 @@ class SignInViewModel : ViewModel() {
                     val userId = responseBody.user?.id ?: responseBody.id
 
                     if (userId != null) {
-                        // Сохраняем токен и ID
                         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
-                        sharedPrefs.edit()
-                            .putString("userId", userId)
-                            .putString("userEmail", email)
-                            .putString("accessToken", responseBody.accessToken)
-                            .apply()
+                        sharedPrefs.edit().putString("userId", userId).putString("userEmail", email).putString("accessToken", responseBody.accessToken).apply()
 
                         Log.d("signIn", "Успешный вход: $email, ID=$userId")
-                        signInSuccessMutable.value = true // Триггер навигации
+                        signInSuccessMutable.value = true
                     } else {
                         signInErrorMutable.value = "Ошибка: сервер не вернул ID пользователя"
                     }

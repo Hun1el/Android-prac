@@ -162,10 +162,12 @@ fun OnboardScreen1(
 
         Spacer(modifier = Modifier.height(136.dp))
 
+        Spacer(modifier = Modifier.weight(1f))
+
         PrimaryButton(
             text = stringResource(R.string.start),
             onClick = { onStartClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             style = MaterialTheme.typography.labelMedium,
             textColor = Text,
             backgroundColor = Block
@@ -253,12 +255,12 @@ fun OnboardScreen2(
             )
         }
 
-        Spacer(modifier = Modifier.height(136.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
             text = stringResource(R.string.next),
             onClick = { onNextClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             style = MaterialTheme.typography.labelMedium,
             textColor = Text,
             backgroundColor = Block
@@ -346,12 +348,12 @@ fun OnboardScreen3(
             )
         }
 
-        Spacer(modifier = Modifier.height(136.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
             text = stringResource(R.string.next),
             onClick = { onStartClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             style = MaterialTheme.typography.labelMedium,
             textColor = Text,
             backgroundColor = Block

@@ -69,4 +69,6 @@
     <string name="confirm">Подтвердить</string>
     <string name="map">Карта</string>
     <string name="loyal_card">Карта лояльности</string>
+    <string name="load">Загрузка...</string>
+    <string name="loadenter">Войти</string>
 </resources>

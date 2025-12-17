@@ -70,4 +70,6 @@
     <string name="confirm">Confirm</string>
     <string name="map">Map</string>
     <string name="loyal_card">Loyalty Card</string>
+    <string name="load">Loading...</string>
+    <string name="loadenter">Sign In</string>
 </resources>

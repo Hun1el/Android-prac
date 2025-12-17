@@ -244,9 +244,9 @@ fun SignInScreen(
 
         PrimaryButton(
             text = if (isLoading) {
-                "Загрузка..."
+                stringResource(R.string.load)
             } else {
-                "Войти"
+                stringResource(R.string.loadenter)
             },
             onClick = {
                 val emailError = checkEmail(email)

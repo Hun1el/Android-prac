@@ -61,10 +61,8 @@ fun BottomNavigation(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().height(80.dp).background(
-                    color = containerColor,
-                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                    color = containerColor
+                ).padding(horizontal = 16.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -84,7 +82,11 @@ fun BottomNavigation(
                                 contentDescription = items[index].label,
                                 modifier = Modifier.size(24.dp),
                                 colorFilter = ColorFilter.tint(
-                                    if (selectedTabIndex == index) Accent else iconColor
+                                    if (selectedTabIndex == index) {
+                                        Accent
+                                    } else {
+                                        iconColor
+                                    }
                                 )
                             )
                         }
@@ -111,7 +113,11 @@ fun BottomNavigation(
                                 contentDescription = items[itemIndex].label,
                                 modifier = Modifier.size(24.dp),
                                 colorFilter = ColorFilter.tint(
-                                    if (selectedTabIndex == itemIndex) Accent else iconColor
+                                    if (selectedTabIndex == itemIndex) {
+                                        Accent
+                                    } else {
+                                        iconColor
+                                    }
                                 )
                             )
                         }
