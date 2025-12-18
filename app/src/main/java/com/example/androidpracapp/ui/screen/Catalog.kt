@@ -146,32 +146,40 @@ fun CatalogScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(products.size) { index ->
+                    items(products.size, key = { products[it].id }) { index ->
                         val product = products[index]
                         val isFavorite = favoriteIds.contains(product.id)
 
-                        ProductCard(
-                            data = ProductCardData(
-                                imageRes = R.drawable.air_max,
-                                label = if (product.isBestSeller == true) {
-                                    "BEST SELLER"
-                                } else {
-                                    ""
-                                },
-                                title = product.title,
-                                price = "₽${product.cost.toInt()}",
-                                isFavorite = isFavorite,
-                                isInCart = false,
-                                onFavoriteClick = {
-                                    if (isFavorite) {
-                                        favoriteViewModel.removeFromFavorites(product)
-                                    } else {
-                                        favoriteViewModel.addToFavorites(product)
-                                    }
-                                }
-                            ),
+                        Box(
                             modifier = Modifier.clickable { onProductClick(product) }
-                        )
+                        ) {
+                            ProductCard(
+                                data = ProductCardData(
+                                    imageRes = R.drawable.air_max,
+                                    label = if (product.isBestSeller == true) {
+                                        "BEST SELLER"
+                                    } else {
+                                        ""
+                                    },
+                                    title = product.title,
+                                    price = "₽${product.cost.toInt()}",
+                                    isFavorite = isFavorite,
+                                    isInCart = product.isInCart,
+                                    onFavoriteClick = {
+                                        if (isFavorite) {
+                                            favoriteViewModel.removeFromFavorites(product)
+                                        } else {
+                                            favoriteViewModel.addToFavorites(product)
+                                        }
+                                    },
+                                    onAddClick = {
+                                        if (!product.isInCart) {
+                                            viewModel.addToCart(product)
+                                        }
+                                    }
+                                )
+                            )
+                        }
                     }
                 }
             }

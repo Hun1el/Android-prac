@@ -193,7 +193,6 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                     _products.value = _products.value.map {
                         if (it.id == product.id) it.copy(isInCart = true) else it
                     }
-                    _error.value = "Добавлено в корзину"
                 } else {
                     _error.value = "Ошибка при добавлении в корзину: ${response.code()}"
                 }

@@ -127,4 +127,33 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    fun addToCart(product: Product) {
+        viewModelScope.launch {
+            try {
+                val userId = getUserIdFromPrefs() ?: return@launch
+
+                val entry = com.example.androidpracapp.data.services.CreateCartEntryRequest(
+                    user_id = userId,
+                    product_id = product.id,
+                    count = 1
+                )
+
+                val response = RetrofitInstance.cartManagementService.addToCart(entry)
+
+                if (response.isSuccessful) {
+                    val currentList = _favorites.value.toMutableList()
+                    val index = currentList.indexOfFirst { it.id == product.id }
+                    if (index != -1) {
+                        currentList[index] = currentList[index].copy(isInCart = true)
+                        _favorites.value = currentList
+                    }
+                } else {
+                    Log.e("Favorite", "Ошибка добавления в корзину: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Favorite", "Ошибка добавления в корзину: ${e.message}")
+            }
+        }
+    }
 }

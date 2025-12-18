@@ -40,6 +40,7 @@ import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
+import com.example.androidpracapp.ui.theme.Disable
 import com.example.androidpracapp.ui.theme.FavDetails
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.Red
@@ -260,11 +261,11 @@ fun ProductContent(
             Button(
                 onClick = { onAddToCart(currentProduct) },
                 enabled = !currentProduct.isInCart,
-                modifier = Modifier.weight(1f).height(52.dp).padding(top = 8.dp),
+                modifier = Modifier.weight(1f).height(50.dp).padding(top = 8.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Accent,
-                    disabledContainerColor = Hint
+                    disabledContainerColor = Disable
                 ),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {

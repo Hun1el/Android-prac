@@ -65,6 +65,7 @@ fun FavoriteScreen(
         },
         selectedTabIndex = selectedTabIndex,
         onTabSelected = onTabSelected,
+        viewModel = viewModel,
         modifier = modifier
     )
 }
@@ -77,6 +78,7 @@ fun FavoriteScreenContent(
     onFavoriteClick: (Product) -> Unit,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,
+    viewModel: FavoriteViewModel,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -148,8 +150,11 @@ fun FavoriteScreenContent(
                                 title = product.title,
                                 price = "₽${product.cost.toInt()}",
                                 isFavorite = true,
-                                isInCart = false,
-                                onFavoriteClick = { onFavoriteClick(product) }
+                                isInCart = product.isInCart,
+                                onFavoriteClick = { onFavoriteClick(product) },
+                                onAddClick = {
+                                    viewModel.addToCart(product)
+                                }
                             )
                         )
                     }
