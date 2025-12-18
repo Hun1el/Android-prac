@@ -48,7 +48,8 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = viewModel(),
     selectedTabIndex: Int = 3,
-    onTabSelected: (Int) -> Unit = {}
+    onTabSelected: (Int) -> Unit = {},
+    onFabClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -128,7 +129,7 @@ fun ProfileScreen(
                 ),
                 selectedTabIndex = selectedTabIndex,
                 onTabSelected = onTabSelected,
-                onFabClick = { },
+                onFabClick = onFabClick,
                 fabIconRes = R.drawable.shoping,
                 modifier = Modifier.background(Background)
             )
@@ -341,7 +342,8 @@ fun ProfileField(
     value: String,
     isEditable: Boolean,
     showChangeIcon: Boolean = false,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    onFabClick: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -385,10 +387,4 @@ fun ProfileField(
             }
         )
     }
-}
-
-@Preview
-@Composable
-private fun ProfileScreenPreview() {
-    ProfileScreen()
 }

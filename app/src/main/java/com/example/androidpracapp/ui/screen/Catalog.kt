@@ -72,7 +72,7 @@ fun CatalogScreen(
         containerColor = Background,
         topBar = {
             Column(
-                modifier = Modifier.fillMaxWidth().background(Background).padding(horizontal = 20.dp).padding(top = 16.dp)
+                modifier = Modifier.fillMaxWidth().background(Background).padding(horizontal = 20.dp).padding(top = 48.dp)
             ) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),

@@ -17,21 +17,23 @@ data class CartEntry(
     val count: Int? = 1
 )
 
+data class CreateCartEntryRequest(
+    val user_id: String,
+    val product_id: String,
+    val count: Int = 1
+)
+
 interface CartManagementService {
 
-    @Headers("Prefer: return=representation")
-    @GET("cart")
+    @GET("rest/v1/cart")
     suspend fun getCartItems(@Query("select") select: String = "*", @Query("user_id") userId: String): Response<List<CartEntry>>
 
-    @Headers("Prefer: return=representation")
-    @POST("cart")
-    suspend fun addToCart(@Body cartEntry: CartEntry): Response<List<CartEntry>>
+    @POST("rest/v1/cart")
+    suspend fun addToCart(@Body entry: CreateCartEntryRequest): Response<Unit>
 
-    @Headers("Prefer: return=representation")
-    @PATCH("cart")
-    suspend fun updateCartItem(@Query("id") id: String, @Body body: Map<String, Int>): Response<List<CartEntry>>
+    @PATCH("rest/v1/cart")
+    suspend fun updateCartItem(@Query("id") id: String, @Body body: Map<String, Int>): Response<Unit>
 
-    @Headers("Prefer: return=representation")
-    @DELETE("cart")
+    @DELETE("rest/v1/cart")
     suspend fun deleteCartItem(@Query("id") id: String): Response<Unit>
 }

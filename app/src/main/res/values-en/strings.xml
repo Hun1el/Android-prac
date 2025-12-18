@@ -78,4 +78,7 @@
     <string name="fio">No Name</string>
     <string name="fav_empty">The favorites list is empty</string>
     <string name="desc_less">Collapse</string>
+    <string name="in_cart">In Cart</string>
+    <string name="no_cart1">"The Cart Is Empty "</string>
+    <string name="no_cart2">Add Products Rrom The Catalog</string>
 </resources>

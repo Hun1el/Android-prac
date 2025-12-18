@@ -9,7 +9,6 @@ package com.example.androidpracapp.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,8 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,13 +39,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
-import com.example.androidpracapp.data.services.Product
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
@@ -93,7 +86,7 @@ fun CartScreen(
             modifier = modifier.padding(paddingValues).fillMaxSize().background(Background)
         ) {
             Box(
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp).padding(horizontal = 20.dp)
             ) {
                 BackButton(
                     onClick = onBackClick,
@@ -109,21 +102,51 @@ fun CartScreen(
                 )
             }
 
-            Text(
-                text = "$totalItemsCount" + stringResource(R.string.cart),
-                style = AppTypography.bodySmall,
-                color = Text,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
-
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Accent)
                 }
+            } else if (cartItems.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.shoping),
+                            contentDescription = null,
+                            tint = Accent,
+                            modifier = Modifier.size(80.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(R.string.no_cart1),
+                            style = AppTypography.headlineSmall,
+                            color = Text
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.no_cart2),
+                            style = AppTypography.bodySmall,
+                            color = Hint
+                        )
+                    }
+                }
             } else {
+                Text(
+                    text = "$totalItemsCount" + stringResource(R.string.cart),
+                    style = AppTypography.bodySmall,
+                    color = Text,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                )
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     items(items = cartItems, key = { it.id }) { item ->
                         CartItemRow(
@@ -206,13 +229,13 @@ fun CartItemRow(
             ) {
                 Box(
                     modifier = Modifier.size(24.dp).background(
-                            if (item.count > 1) {
-                                Accent
-                            } else {
-                                Hint
-                            },
-                            RoundedCornerShape(8.dp)
-                        ).clickable { onDecrease() },
+                        if (item.count > 1) {
+                            Accent
+                        } else {
+                            Hint
+                        },
+                        RoundedCornerShape(8.dp)
+                    ).clickable { onDecrease() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

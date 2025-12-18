@@ -1,10 +1,3 @@
-/**
- * Экран просмотра деталей товара
- *
- * @author Солоников Антон
- * @date 18.12.2025
- */
-
 package com.example.androidpracapp.ui.screens
 
 import androidx.compose.animation.animateContentSize
@@ -133,7 +126,8 @@ fun ProductDetailScreen(
                     ProductContent(
                         products = products,
                         startProductId = startProductId,
-                        onFavoriteToggle = { viewModel.toggleFavorite(it) }
+                        onFavoriteToggle = { viewModel.toggleFavorite(it) },
+                        onAddToCart = { viewModel.addToCart(it) }
                     )
                 }
             }
@@ -146,7 +140,8 @@ fun ProductDetailScreen(
 fun ProductContent(
     products: List<Product>,
     startProductId: String,
-    onFavoriteToggle: (Product) -> Unit
+    onFavoriteToggle: (Product) -> Unit,
+    onAddToCart: (Product) -> Unit
 ) {
     if (products.isEmpty()) {
         return
@@ -171,13 +166,11 @@ fun ProductContent(
     ) {
         Spacer(modifier = Modifier.height(30.dp))
 
-        // Название товара
         Text(
             text = currentProduct.title,
             style = AppTypography.headlineLarge
         )
 
-        // Категория
         Text(
             text = currentProduct.categoryName ?: "Shoes",
             style = AppTypography.bodySmall,
@@ -185,7 +178,6 @@ fun ProductContent(
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Цена
         Text(
             text = "₽${currentProduct.cost}",
             style = AppTypography.titleMedium,
@@ -193,7 +185,6 @@ fun ProductContent(
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        // Картинка свайпа
         Box(
             modifier = Modifier.fillMaxWidth().height(320.dp),
             contentAlignment = Alignment.BottomCenter
@@ -235,7 +226,6 @@ fun ProductContent(
 
         Spacer(modifier = Modifier.height(70.dp))
 
-        // Описание
         ExpandableText(text = currentProduct.description)
 
         Spacer(modifier = Modifier.weight(1f))
@@ -245,7 +235,6 @@ fun ProductContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Кнопка избранное
             Box(
                 modifier = Modifier.size(52.dp).clip(CircleShape).background(FavDetails).clickable { onFavoriteToggle(currentProduct) },
                 contentAlignment = Alignment.Center
@@ -268,13 +257,14 @@ fun ProductContent(
 
             Spacer(modifier = Modifier.width(18.dp))
 
-            // Кнопка в корзину
             Button(
-                onClick = {  },
+                onClick = { onAddToCart(currentProduct) },
+                enabled = !currentProduct.isInCart,
                 modifier = Modifier.weight(1f).height(52.dp).padding(top = 8.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Accent
+                    containerColor = Accent,
+                    disabledContainerColor = Hint
                 ),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {
@@ -285,7 +275,11 @@ fun ProductContent(
                     modifier = Modifier.size(20.dp).padding(end = 8.dp)
                 )
                 Text(
-                    text = stringResource(R.string.to_cart),
+                    text = if (currentProduct.isInCart) {
+                        stringResource(R.string.in_cart)
+                    } else {
+                        stringResource(R.string.to_cart)
+                    },
                     color = Block,
                     style = AppTypography.labelMedium
                 )

@@ -28,7 +28,7 @@ data class Product(
     val cost: Double,
     val category_id: String?,
     @SerializedName("is_best_seller") val isBestSeller: Boolean?,
-
+    val isInCart: Boolean = false,
     var categoryName: String? = null,
     var isFavorite: Boolean = false,
     val imageResId: Int? = null

@@ -1,19 +1,10 @@
-/**
- * ViewModel корзины
- *
- * @author Солоников Антон
- * @date 18.12.2025
- */
-
 package com.example.androidpracapp.ui.viewModel
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
-import com.example.androidpracapp.data.services.CartEntry
 import com.example.androidpracapp.data.services.Product
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,7 +97,6 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
             } catch (e: Exception) {
-                Log.e("CartViewModel", "Error loading cart", e)
                 _error.value = "Ошибка загрузки: ${e.localizedMessage}"
             } finally {
                 _isLoading.value = false
@@ -128,11 +118,9 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                         if (it.id == item.id) it.copy(count = newCount) else it
                     }
                     calculateSummary()
-                } else {
-                    Log.e("CartViewModel", "Failed to increase: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("CartViewModel", "Error increasing", e)
+                _error.value = "Ошибка: ${e.localizedMessage}"
             }
         }
     }
@@ -157,7 +145,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                     deleteItem(item)
                 }
             } catch (e: Exception) {
-                Log.e("CartViewModel", "Error decreasing", e)
+                _error.value = "Ошибка: ${e.localizedMessage}"
             }
         }
     }
@@ -169,30 +157,9 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful) {
                     _cartItems.value = _cartItems.value.filter { it.id != item.id }
                     calculateSummary()
-                } else {
-                    Log.e("CartViewModel", "Failed to delete: ${response.code()}")
                 }
             } catch (e: Exception) {
-                Log.e("CartViewModel", "Error deleting", e)
-            }
-        }
-    }
-
-    fun addToCart(productId: String) {
-        viewModelScope.launch {
-            try {
-                val userId = getUserIdFromPrefs() ?: return@launch
-                val entry = CartEntry(
-                    user_id = userId,
-                    product_id = productId,
-                    count = 1
-                )
-                val response = cartService.addToCart(entry)
-                if (response.isSuccessful) {
-                    loadCart()
-                }
-            } catch (e: Exception) {
-                Log.e("CartViewModel", "Error adding", e)
+                _error.value = "Ошибка: ${e.localizedMessage}"
             }
         }
     }

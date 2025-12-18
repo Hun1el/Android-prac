@@ -77,4 +77,7 @@
     <string name="fio">Имя Фамилия</string>
     <string name="fav_empty">Список избранного пустого</string>
     <string name="desc_less">Свернуть</string>
+    <string name="in_cart">В корзине</string>
+    <string name="no_cart1">Корзина пуста</string>
+    <string name="no_cart2">Добавьте товары из каталога</string>
 </resources>

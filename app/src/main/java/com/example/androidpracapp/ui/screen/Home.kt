@@ -78,6 +78,7 @@ fun HomeScreen(
     favoriteViewModel: FavoriteViewModel = viewModel(),
     onProductClick: (Product) -> Unit = {},
     selectedTabIndex: Int = 0,
+    onFabClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
     onTabSelected: (Int) -> Unit = {}
 ) {
@@ -110,7 +111,7 @@ fun HomeScreen(
                 ),
                 selectedTabIndex = selectedTabIndex,
                 onTabSelected = onTabSelected,
-                onFabClick = {  },
+                onFabClick = onFabClick,
                 fabIconRes = R.drawable.shoping,
                 modifier = Modifier.background(Background)
             )

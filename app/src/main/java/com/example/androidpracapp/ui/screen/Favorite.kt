@@ -50,7 +50,8 @@ fun FavoriteScreen(
     viewModel: FavoriteViewModel = viewModel(),
     onBackClick: () -> Unit = {},
     selectedTabIndex: Int = 1,
-    onTabSelected: (Int) -> Unit = {}
+    onTabSelected: (Int) -> Unit = {},
+    onFabClick: () -> Unit = {}
 ) {
     val favorites by viewModel.favorites.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()

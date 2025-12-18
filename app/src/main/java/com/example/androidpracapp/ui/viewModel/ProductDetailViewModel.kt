@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
+import com.example.androidpracapp.data.services.CartEntry
+import com.example.androidpracapp.data.services.CreateCartEntryRequest
 import com.example.androidpracapp.data.services.NewFavorite
 import com.example.androidpracapp.data.services.Product
 import kotlinx.coroutines.async
@@ -26,9 +28,12 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
 
     private val catalogService = RetrofitInstance.catalogManagementService
     private val favoriteService = RetrofitInstance.favoriteManagementService
+    private val cartService = RetrofitInstance.cartManagementService
 
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> = _products.asStateFlow()
+
+    private val _cartProductIds = MutableStateFlow<Set<String>>(emptySet())
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -36,11 +41,29 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    init {
+        loadCartProductIds()
+    }
+
     private fun getUserIdFromPrefs(): String? {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
-
         return sharedPrefs.getString("userId", null)
+    }
+
+    private fun loadCartProductIds() {
+        viewModelScope.launch {
+            try {
+                val userId = getUserIdFromPrefs() ?: return@launch
+                val response = cartService.getCartItems(userId = "eq.$userId")
+                if (response.isSuccessful) {
+                    val cartIds = response.body()?.map { it.product_id }?.toSet() ?: emptySet()
+                    _cartProductIds.value = cartIds
+                }
+            } catch (e: Exception) {
+                _cartProductIds.value = emptySet()
+            }
+        }
     }
 
     fun loadData() {
@@ -81,8 +104,9 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                         val mappedProducts = rawProducts.map { product ->
                             val catTitle = categories.find { it.id == product.category_id }?.title
                             val isFav = favoriteIds.contains(product.id)
+                            val isInCart = _cartProductIds.value.contains(product.id)
 
-                            product.copy(categoryName = catTitle, isFavorite = isFav)
+                            product.copy(categoryName = catTitle, isFavorite = isFav, isInCart = isInCart)
                         }
                         _products.value = mappedProducts
                     }
@@ -93,7 +117,6 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                 _error.value = "Ошибка сети. Проверьте интернет."
             } catch (e: Exception) {
                 _error.value = "Произошла ошибка: ${e.localizedMessage}"
-                Log.e("Detail", "Load error", e)
             } finally {
                 _isLoading.value = false
             }
@@ -119,7 +142,6 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                 val userId = getUserIdFromPrefs()
                 if (userId == null) {
                     revertFavoriteState(product)
-
                     return@launch
                 }
 
@@ -130,11 +152,9 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                 }
 
                 if (!response.isSuccessful) {
-                    Log.e("Detail", "fav failed: ${response.code()}")
                     revertFavoriteState(product)
                 }
             } catch (e: Exception) {
-                Log.e("Detail", "fav error", e)
                 revertFavoriteState(product)
             }
         }
@@ -146,6 +166,40 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
                 it.copy(isFavorite = product.isFavorite)
             } else {
                 it
+            }
+        }
+    }
+
+    fun addToCart(product: Product) {
+        viewModelScope.launch {
+            try {
+                val userId = getUserIdFromPrefs()
+
+                if (userId == null) {
+                    _error.value = "Пользователь не авторизован"
+                    return@launch
+                }
+
+                val entry = CreateCartEntryRequest(
+                    user_id = userId,
+                    product_id = product.id,
+                    count = 1
+                )
+
+                val response = cartService.addToCart(entry)
+
+                if (response.isSuccessful) {
+                    _cartProductIds.value = _cartProductIds.value + product.id
+                    _products.value = _products.value.map {
+                        if (it.id == product.id) it.copy(isInCart = true) else it
+                    }
+                    _error.value = "Добавлено в корзину"
+                } else {
+                    _error.value = "Ошибка при добавлении в корзину: ${response.code()}"
+                }
+
+            } catch (e: Exception) {
+                _error.value = "Ошибка сети: ${e.message}"
             }
         }
     }
