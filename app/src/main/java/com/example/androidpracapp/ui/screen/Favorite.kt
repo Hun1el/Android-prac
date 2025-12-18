@@ -36,8 +36,10 @@ import com.example.androidpracapp.ui.components.BottomNavigation
 import com.example.androidpracapp.ui.components.ProductCard
 import com.example.androidpracapp.ui.components.ProductCardData
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
+import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.Text
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
@@ -91,7 +93,7 @@ fun FavoriteScreenContent(
 
                 Text(
                     text = stringResource(R.string.favorite),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = AppTypography.headlineSmall,
                     color = Text
                 )
 
@@ -121,7 +123,7 @@ fun FavoriteScreenContent(
                 Text(
                     text = stringResource(R.string.fav_empty),
                     modifier = Modifier.align(Alignment.Center),
-                    color = com.example.androidpracapp.ui.theme.Hint
+                    color = Hint
                 )
             } else {
                 LazyVerticalGrid(

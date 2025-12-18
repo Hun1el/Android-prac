@@ -16,6 +16,7 @@ livedata = "1.9.4"
 navigationComposeVersion = "2.9.5"
 foundation = "1.10.0"
 lifecycleViewmodelKtx = "2.10.0"
+litertSupportApi = "1.4.1"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -41,6 +42,7 @@ livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", vers
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeVersion" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+litert-support-api = { group = "com.google.ai.edge.litert", name = "litert-support-api", version.ref = "litertSupportApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

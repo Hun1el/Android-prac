@@ -48,6 +48,7 @@ import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
@@ -138,7 +139,7 @@ fun ForgotPasswordScreen(
 
         Text(
             text = stringResource(id = R.string.forgot_password),
-            style = MaterialTheme.typography.displayMedium,
+            style = AppTypography.displayMedium,
             textAlign = TextAlign.Center
         )
 
@@ -147,21 +148,12 @@ fun ForgotPasswordScreen(
         Text(
             text = stringResource(id = R.string.zero),
             color = SubTextDark,
-            style = MaterialTheme.typography.titleLarge,
+            style = AppTypography.bodySmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(38.dp))
-
-        Text(
-            text = stringResource(id = R.string.email),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = email,
@@ -170,7 +162,7 @@ fun ForgotPasswordScreen(
                 Text(
                     "xyz@gmail.com",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.labelMedium
                 )
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -196,7 +188,7 @@ fun ForgotPasswordScreen(
                 }
             },
             enabled = !isLoading && email.isNotEmpty(),
-            style = MaterialTheme.typography.labelMedium,
+            style = AppTypography.labelMedium,
             textColor = Background
         )
 

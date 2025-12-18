@@ -60,7 +60,7 @@ fun BottomNavigation(
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(80.dp).background(
+            modifier = Modifier.fillMaxWidth().height(100.dp).background(
                 color = containerColor
             ).padding(horizontal = 16.dp, vertical = 0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,

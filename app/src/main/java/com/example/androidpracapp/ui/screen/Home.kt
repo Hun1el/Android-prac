@@ -213,7 +213,7 @@ fun HomeScreen(
                         Column {
                             Text(
                                 text = stringResource(R.string.category),
-                                style = MaterialTheme.typography.titleMedium,
+                                style = AppTypography.bodyMedium,
                                 color = Text
                             )
 
@@ -248,7 +248,7 @@ fun HomeScreen(
                                             } else {
                                                 Text
                                             },
-                                            style = MaterialTheme.typography.labelLarge
+                                            style = AppTypography.labelSmall
                                         )
                                     }
                                 }
@@ -263,13 +263,13 @@ fun HomeScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.popular),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = AppTypography.bodyMedium,
                                     color = Text
                                 )
 
                                 Text(
                                     text = stringResource(R.string.all),
-                                    style = MaterialTheme.typography.labelMedium,
+                                    style = AppTypography.labelSmall,
                                     color = Accent,
                                     modifier = Modifier.clickable { }
                                 )
@@ -315,13 +315,13 @@ fun HomeScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.stock),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    style = AppTypography.bodyMedium,
                                     color = Text,
                                 )
 
                                 Text(
                                     text = stringResource(R.string.all),
-                                    style = MaterialTheme.typography.labelMedium,
+                                    style = AppTypography.labelSmall,
                                     color = Accent,
                                     modifier = Modifier.clickable { }
                                 )

@@ -50,6 +50,7 @@ import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
@@ -147,7 +148,7 @@ fun RegisterAccountScreen(
 
         Text(
             text = stringResource(id = R.string.sign_up1),
-            style = MaterialTheme.typography.displayMedium
+            style = AppTypography.displayMedium
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -155,14 +156,14 @@ fun RegisterAccountScreen(
         Text(
             text = stringResource(id = R.string.enter_data),
             color = SubTextDark,
-            style = MaterialTheme.typography.titleLarge
+            style = AppTypography.bodySmall
         )
 
         Spacer(modifier = Modifier.height(54.dp))
 
         Text(
             text = stringResource(id = R.string.your_name),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
@@ -176,7 +177,7 @@ fun RegisterAccountScreen(
                 Text(
                     "XXXXXXXX",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = AppTypography.labelMedium,
                 )
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -193,7 +194,7 @@ fun RegisterAccountScreen(
 
         Text(
             text = stringResource(id = R.string.email),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
@@ -207,7 +208,7 @@ fun RegisterAccountScreen(
                 Text(
                     "xyz@gmail.com",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.labelMedium
                 )
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -224,7 +225,7 @@ fun RegisterAccountScreen(
 
         Text(
             text = stringResource(id = R.string.password),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
@@ -238,7 +239,7 @@ fun RegisterAccountScreen(
                 Text(
                     "••••••••",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.labelMedium
                 )
             },
             visualTransformation = if (isPasswordVisible) {
@@ -293,7 +294,7 @@ fun RegisterAccountScreen(
             Text(
                 color = Hint,
                 text = stringResource(id = R.string.personal_data),
-                style = MaterialTheme.typography.bodySmall,
+                style = AppTypography.bodySmall,
                 modifier = Modifier.clickable { agreedToTerms = !agreedToTerms }
             )
         }
@@ -330,7 +331,7 @@ fun RegisterAccountScreen(
                 }
             },
             enabled = agreedToTerms && !isLoading && name.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
-            style = MaterialTheme.typography.labelMedium,
+            style = AppTypography.labelMedium,
             textColor = Background
         )
 
@@ -343,13 +344,13 @@ fun RegisterAccountScreen(
             Text(
                 text = stringResource(id = R.string.sign_in_acc).split("? ")[0] + "? ",
                 color = Hint,
-                style = MaterialTheme.typography.bodySmall
+                style = AppTypography.bodySmall
             )
 
             Text(
                 text = stringResource(id = R.string.sign_in_acc).split("? ")[1],
                 color = Text,
-                style = MaterialTheme.typography.bodySmall,
+                style = AppTypography.bodySmall,
                 modifier = Modifier.clickable { onSignInClick() }
             )
         }

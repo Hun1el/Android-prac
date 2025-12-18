@@ -32,7 +32,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,7 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.data.services.Product
 import com.example.androidpracapp.ui.components.BackButton
-import com.example.androidpracapp.ui.components.MessageDialog // Импорт вашего компонента
+import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
