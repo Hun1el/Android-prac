@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -138,7 +139,7 @@ fun CartScreen(
                 }
             } else {
                 Text(
-                    text = "$totalItemsCount" + stringResource(R.string.cart),
+                    text = "$totalItemsCount" + " "+ stringResource(R.string.cart),
                     style = AppTypography.bodySmall,
                     color = Text,
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
@@ -170,11 +171,18 @@ fun CartItemRow(
     onDelete: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().height(120.dp).background(Block, RoundedCornerShape(16.dp)).padding(10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(140.dp)  // ← увеличил с 120.dp на 140.dp
+            .background(Block, RoundedCornerShape(16.dp))
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(100.dp).clip(RoundedCornerShape(16.dp)).background(Background),
+            modifier = Modifier
+                .size(100.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Background),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -188,7 +196,9 @@ fun CartItemRow(
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
@@ -197,9 +207,9 @@ fun CartItemRow(
                 color = Text,
                 maxLines = 2
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "₽${item.product.cost}",
+                text = "₽${item.product.cost?.toInt() ?: 0}",
                 style = AppTypography.labelMedium,
                 color = Text
             )
@@ -208,41 +218,39 @@ fun CartItemRow(
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxHeight()
         ) {
             IconButton(
                 onClick = onDelete,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(32.dp)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.trash),
                     contentDescription = "Delete",
-                    tint = Red
+                    tint = Red,
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Box(
-                    modifier = Modifier.size(24.dp).background(
-                        if (item.count > 1) {
-                            Accent
-                        } else {
-                            Hint
-                        },
-                        RoundedCornerShape(8.dp)
-                    ).clickable { onDecrease() },
+                    modifier = Modifier
+                        .size(28.dp)
+                        .background(
+                            if (item.count > 1) Accent else Hint,
+                            RoundedCornerShape(6.dp)
+                        )
+                        .clickable { onDecrease() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.minus),
                         contentDescription = "Decrease",
                         tint = Block,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
 
@@ -253,20 +261,24 @@ fun CartItemRow(
                 )
 
                 Box(
-                    modifier = Modifier.size(24.dp).background(Accent, RoundedCornerShape(8.dp)).clickable { onIncrease() },
+                    modifier = Modifier
+                        .size(28.dp)
+                        .background(Accent, RoundedCornerShape(6.dp))
+                        .clickable { onIncrease() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.add),
                         contentDescription = "Increase",
                         tint = Block,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun CartBottomBar(

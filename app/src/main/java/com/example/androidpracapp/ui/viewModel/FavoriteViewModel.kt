@@ -50,21 +50,28 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
                 if (userId != null) {
                     Log.d("Favorite", "Запрос избранного для userId: $userId")
 
-                    val response = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
+                    val favResponse = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
+                    val cartResponse = RetrofitInstance.cartManagementService.getCartItems(userId = "eq.$userId")
 
-                    Log.d("Favorite", "Код ответа: ${response.code()}")
+                    Log.d("Favorite", "Код ответа: ${favResponse.code()}")
 
-                    if (response.isSuccessful && response.body() != null) {
-                        val body = response.body()!!
-                        Log.d("Favorite", "Тело: ${body.size}")
+                    if (favResponse.isSuccessful && favResponse.body() != null && cartResponse.isSuccessful) {
+                        val favBody = favResponse.body()!!
+                        val cartBody = cartResponse.body() ?: emptyList()
 
-                        val mappedProducts = body.mapNotNull { it.products }
+                        val cartProductIds = cartBody.map { it.product_id }.toSet()
+
+                        Log.d("Favorite", "Тело: ${favBody.size}")
+
+                        val mappedProducts = favBody.mapNotNull { it.products }.map { product ->
+                            product.copy(isInCart = cartProductIds.contains(product.id))
+                        }
                         Log.d("Favorite", "${mappedProducts.size}")
 
                         _favorites.value = mappedProducts
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e("Favorite", "Ошибка сервера: ${response.code()} Body: $errorBody")
+                        val errorBody = favResponse.errorBody()?.string()
+                        Log.e("Favorite", "Ошибка сервера: ${favResponse.code()} Body: $errorBody")
                     }
                 } else {
                     Log.e("Favorite", "UserId null")

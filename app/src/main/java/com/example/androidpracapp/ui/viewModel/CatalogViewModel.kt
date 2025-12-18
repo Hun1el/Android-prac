@@ -46,7 +46,7 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
         return sharedPrefs.getString("userId", null)
     }
 
-    private fun loadCartProductIds() {
+    fun loadCartProductIds() {
         viewModelScope.launch {
             try {
                 val userId = getUserIdFromPrefs() ?: return@launch

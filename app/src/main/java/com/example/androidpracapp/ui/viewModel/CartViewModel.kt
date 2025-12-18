@@ -74,11 +74,15 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
                     val cartEntries = cartResponse.body() ?: emptyList()
                     val allProducts = productsResponse.body() ?: emptyList()
 
+                    android.util.Log.d("CartViewModel", "Cart entries: ${cartEntries.size}")
+                    android.util.Log.d("CartViewModel", "All products: ${allProducts.size}")
+
                     if (cartEntries.isEmpty()) {
                         _cartItems.value = emptyList()
                     } else {
                         val mappedItems = cartEntries.mapNotNull { entry ->
                             val product = allProducts.find { it.id == entry.product_id }
+                            android.util.Log.d("CartViewModel", "Entry: ${entry.product_id}, Found: ${product?.title}")
                             if (product != null) {
                                 CartUIItem(
                                     id = entry.id,
@@ -98,6 +102,7 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
             } catch (e: Exception) {
                 _error.value = "Ошибка загрузки: ${e.localizedMessage}"
+                android.util.Log.e("CartViewModel", "Error loading cart", e)
             } finally {
                 _isLoading.value = false
             }
