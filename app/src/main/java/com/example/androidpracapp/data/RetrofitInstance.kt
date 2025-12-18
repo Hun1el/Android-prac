@@ -1,5 +1,6 @@
 package com.example.androidpracapp.data
 
+import com.example.androidpracapp.data.services.CartManagementService
 import com.example.androidpracapp.data.services.CatalogManagementService
 import com.example.androidpracapp.data.services.FavoriteManagementService
 import com.example.androidpracapp.data.services.ProfileManagementService
@@ -37,4 +38,5 @@ object RetrofitInstance {
     val profileManagementService = retrofit.create(ProfileManagementService::class.java)
     val catalogManagementService = retrofit.create(CatalogManagementService::class.java)
     val favoriteManagementService = retrofit.create(FavoriteManagementService::class.java)
+    val cartManagementService = retrofit.create(CartManagementService::class.java)
 }

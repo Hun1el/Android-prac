@@ -38,7 +38,7 @@
     <string name="stock">Акции</string>
     <string name="favorite">Избранное</string>
     <string name="bucket">Корзина</string>
-    <string name="cart">Товара</string>
+    <string name="cart">товара</string>
     <string name="sub">Сумма</string>
     <string name="delivery">Доставка</string>
     <string name="total">Итого</string>
