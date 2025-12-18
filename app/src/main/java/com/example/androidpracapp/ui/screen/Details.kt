@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.data.services.Product
 import com.example.androidpracapp.ui.components.BackButton
+import com.example.androidpracapp.ui.components.MessageDialog // Импорт вашего компонента
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
@@ -59,7 +60,9 @@ fun ProductDetailScreen(
     val error by viewModel.error.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadData()
+        if (products.isEmpty() && !isLoading && error == null) {
+            viewModel.loadData()
+        }
     }
 
     Scaffold(
@@ -76,6 +79,7 @@ fun ProductDetailScreen(
                 navigationIcon = {
                     BackButton(
                         onClick = onBackClick,
+                        modifier = Modifier.padding(start = 20.dp),
                         backgroundColor = Block
                     )
                 },
@@ -108,15 +112,17 @@ fun ProductDetailScreen(
         ) {
             when {
                 isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
                 error != null -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = error!!, color = Color.Red)
-                        Button(onClick = { viewModel.loadData() }) { Text("Повторить") }
-                    }
+                    MessageDialog(
+                        title = "Ошибка",
+                        description = error ?: "Неизвестная ошибка",
+                        icon = painterResource(id = R.drawable.email),
+                        onOk = { viewModel.loadData() },
+                        showButtons = true
+                    )
                 }
+
                 products.isNotEmpty() -> {
                     ProductContent(
                         products = products,
@@ -136,6 +142,10 @@ fun ProductContent(
     startProductId: String,
     onFavoriteToggle: (Product) -> Unit
 ) {
+    if (products.isEmpty()) {
+        return
+    }
+
     val initialIndex = remember(products) {
         val index = products.indexOfFirst { it.id == startProductId }
         if (index >= 0) {
@@ -180,19 +190,32 @@ fun ProductContent(
         Spacer(modifier = Modifier.height(36.dp))
 
         // Картинка свайпа
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxWidth().height(150.dp),
-            contentPadding = PaddingValues(horizontal = 4.dp)
-        ) { page ->
-            val item = products[page]
-            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Image(
-                    painter = painterResource(id = R.drawable.air_max_big),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(1.0f),
-                    contentScale = ContentScale.Fit
-                )
+        Box(
+            modifier = Modifier.fillMaxWidth().height(400.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.podium),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(60.dp).offset(y = (-20).dp),
+                contentScale = ContentScale.FillWidth
+            )
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxWidth().height(230.dp).padding(bottom = 20.dp), // Отступ снизу, чтобы "стоять" на подиуме
+                contentPadding = PaddingValues(horizontal = 4.dp),
+                verticalAlignment = Alignment.Bottom
+            ) { page ->
+                val item = products[page]
+                Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.air_max_big),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth(0.9f).aspectRatio(1.5f),
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
         }
 
@@ -291,18 +314,18 @@ fun ThumbnailsRow(
 
             Box(
                 modifier = Modifier.size(56.dp).clip(RoundedCornerShape(16.dp)).background(Block).border(
-                        width = if (isSelected) {
-                            2.dp
-                        } else {
-                            0.dp
-                        },
-                        color = if (isSelected) {
-                            Accent
-                        } else {
-                            Transparent
-                        },
-                        shape = RoundedCornerShape(16.dp)
-                    ).clickable { onSelect(index) },
+                    width = if (isSelected) {
+                        2.dp
+                    } else {
+                        0.dp
+                    },
+                    color = if (isSelected) {
+                        Accent
+                    } else {
+                        Transparent
+                    },
+                    shape = RoundedCornerShape(16.dp)
+                ).clickable { onSelect(index) },
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -318,41 +341,43 @@ fun ThumbnailsRow(
 
 @Composable
 fun ExpandableText(text: String) {
-    var isExpanded by remember { mutableStateOf(false) }
-    var isOverflowing by remember { mutableStateOf(false) }
+    key(text) {
+        var isExpanded by remember { mutableStateOf(false) }
+        var isOverflowing by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.animateContentSize()) {
-        Text(
-            text = text,
-            style = AppTypography.labelMedium,
-            color = Hint,
-            maxLines = if (isExpanded) {
-                Int.MAX_VALUE
-            } else {
-                3
-            },
-            overflow = TextOverflow.Ellipsis,
-            onTextLayout = { textLayoutResult ->
-                if (!isExpanded && textLayoutResult.hasVisualOverflow) {
-                    isOverflowing = true
-                }
-            }
-        )
-
-        if (isOverflowing || isExpanded) {
+        Column(modifier = Modifier.animateContentSize()) {
             Text(
-                text = if (isExpanded) {
-                    stringResource(R.string.desc_less)
+                text = text,
+                style = AppTypography.labelMedium,
+                color = Hint,
+                maxLines = if (isExpanded) {
+                    Int.MAX_VALUE
                 } else {
-                    stringResource(R.string.more)
+                    3
                 },
-                color = Accent,
-                style = AppTypography.labelLarge,
-                modifier = Modifier.padding(top = 4.dp).clickable(
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { textLayoutResult ->
+                    if (!isExpanded && textLayoutResult.hasVisualOverflow) {
+                        isOverflowing = true
+                    }
+                }
+            )
+
+            if (isOverflowing || isExpanded) {
+                Text(
+                    text = if (isExpanded) {
+                        stringResource(R.string.desc_less)
+                    } else {
+                        stringResource(R.string.more)
+                    },
+                    color = Accent,
+                    style = AppTypography.labelLarge,
+                    modifier = Modifier.padding(top = 4.dp).clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) { isExpanded = !isExpanded }.align(Alignment.End)
-            )
+                )
+            }
         }
     }
 }

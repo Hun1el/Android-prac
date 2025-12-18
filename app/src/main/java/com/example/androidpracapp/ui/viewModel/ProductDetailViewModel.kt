@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class ProductDetailViewModel : ViewModel() {
 
@@ -24,6 +25,8 @@ class ProductDetailViewModel : ViewModel() {
     val error: StateFlow<String?> = _error.asStateFlow()
 
     fun loadData() {
+        if (_isLoading.value) return
+
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
@@ -38,17 +41,22 @@ class ProductDetailViewModel : ViewModel() {
                     val rawProducts = productsResponse.body() ?: emptyList()
                     val categories = categoriesResponse.body() ?: emptyList()
 
-                    val mappedProducts = rawProducts.map { product ->
-                        val catTitle = categories.find { it.id == product.category_id }?.title
-                        product.copy(categoryName = catTitle)
+                    if (rawProducts.isEmpty()) {
+                        _error.value = "Список товаров пуст"
+                    } else {
+                        val mappedProducts = rawProducts.map { product ->
+                            val catTitle = categories.find { it.id == product.category_id }?.title
+                            product.copy(categoryName = catTitle)
+                        }
+                        _products.value = mappedProducts
                     }
-
-                    _products.value = mappedProducts
                 } else {
-                    _error.value = "Ошибка загрузки данных"
+                    _error.value = "Ошибка сервера: ${productsResponse.code()}"
                 }
+            } catch (e: IOException) {
+                _error.value = "Ошибка сети. Проверьте интернет."
             } catch (e: Exception) {
-                _error.value = "Ошибка соединения: ${e.localizedMessage}"
+                _error.value = "Произошла ошибка: ${e.localizedMessage}"
             } finally {
                 _isLoading.value = false
             }
@@ -56,8 +64,13 @@ class ProductDetailViewModel : ViewModel() {
     }
 
     fun toggleFavorite(product: Product) {
+        if (_products.value.isEmpty()) return
         _products.value = _products.value.map {
-            if (it.id == product.id) it.copy(isFavorite = !it.isFavorite) else it
+            if (it.id == product.id) {
+                it.copy(isFavorite = !it.isFavorite)
+            } else {
+                it
+            }
         }
     }
 }
