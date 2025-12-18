@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.SubTextDark
@@ -199,9 +200,8 @@ fun ResendCodeButton(
         if (isTimerActive > 0) {
             Text(
                 text = "Отправить заново через ${String.format("%02d:%02d", timeLeft / 60, timeLeft % 60)}",
-                style = MaterialTheme.typography.bodySmall,
+                style = AppTypography.labelSmall,
                 color = SubTextDark,
-                fontSize = 12.sp
             )
         } else {
             ClickableText(
@@ -213,11 +213,7 @@ fun ResendCodeButton(
                         timeLeft = 60
                     }
                 },
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Accent,
-                    fontSize = 12.sp,
-                    textDecoration = TextDecoration.Underline
-                )
+                style = AppTypography.labelSmall,
             )
         }
     }
