@@ -43,6 +43,7 @@ import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.ProductCard
 import com.example.androidpracapp.ui.components.ProductCardData
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Text
@@ -90,7 +91,7 @@ fun CatalogScreen(
 
                     Text(
                         text = selectedCategory?.title ?: stringResource(R.string.category),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = AppTypography.headlineSmall,
                         color = Text,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -119,8 +120,12 @@ fun CatalogScreen(
                         ) {
                             Text(
                                 text = cat.title,
-                                color = if (isSelected) Block else Text,
-                                style = MaterialTheme.typography.labelLarge
+                                color = if (isSelected) {
+                                    Block
+                                } else {
+                                    Text
+                                },
+                                style = AppTypography.labelSmall
                             )
                         }
                     }

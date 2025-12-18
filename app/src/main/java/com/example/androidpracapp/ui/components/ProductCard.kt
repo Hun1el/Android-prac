@@ -71,7 +71,7 @@ fun ProductCard(
     var isInCart by remember(data.isInCart) { mutableStateOf(data.isInCart) }
 
     Box(
-        modifier = modifier.size(175.dp).shadow(
+        modifier = modifier.size(180.dp).shadow(
             elevation = 4.dp,
             shape = RoundedCornerShape(12.dp),
             clip = false
@@ -81,7 +81,7 @@ fun ProductCard(
         )
     ) {
         Column(
-            modifier = Modifier.size(175.dp),
+            modifier = Modifier.size(180.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column(

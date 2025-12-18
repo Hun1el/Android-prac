@@ -38,7 +38,7 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
         val id = sharedPrefs.getString("userId", null)
-        Log.d("FavoriteVM", "getUserIdFromPrefs: $id")
+        Log.d("Favorite", "getUserIdFromPrefs: $id")
         return id
     }
 
@@ -48,29 +48,29 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             try {
                 val userId = getUserIdFromPrefs()
                 if (userId != null) {
-                    Log.d("FavoriteVM", "Запрос избранного для userId: $userId")
+                    Log.d("Favorite", "Запрос избранного для userId: $userId")
 
                     val response = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
 
-                    Log.d("FavoriteVM", "Response Code: ${response.code()}")
+                    Log.d("Favorite", "Код ответа: ${response.code()}")
 
                     if (response.isSuccessful && response.body() != null) {
                         val body = response.body()!!
-                        Log.d("FavoriteVM", "Raw Body Size: ${body.size}")
+                        Log.d("Favorite", "Тело: ${body.size}")
 
                         val mappedProducts = body.mapNotNull { it.products }
-                        Log.d("FavoriteVM", "Mapped Products Size: ${mappedProducts.size}")
+                        Log.d("Favorite", "${mappedProducts.size}")
 
                         _favorites.value = mappedProducts
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        Log.e("FavoriteVM", "Ошибка сервера: ${response.code()} Body: $errorBody")
+                        Log.e("Favorite", "Ошибка сервера: ${response.code()} Body: $errorBody")
                     }
                 } else {
-                    Log.e("FavoriteVM", "UserId is null, не можем загрузить")
+                    Log.e("Favorite", "UserId null")
                 }
             } catch (e: Exception) {
-                Log.e("FavoriteVM", "Exception при загрузке: ${e.message}", e)
+                Log.e("Favorite", "Ошибка при загрузке: ${e.message}", e)
             } finally {
                 _isLoading.value = false
             }
@@ -94,11 +94,11 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
 
                 if (!response.isSuccessful) {
                     loadFavorites()
-                    Log.e("FavoriteVM", "Add failed: ${response.code()}")
+                    Log.e("Favorite", "Ошибка добавления: ${response.code()}")
                 }
             } catch (e: Exception) {
                 loadFavorites()
-                Log.e("FavoriteVM", "Add error: ${e.message}")
+                Log.e("Favorite", "Ошибка добавления: ${e.message}")
             }
         }
     }
@@ -119,11 +119,11 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
 
                 if (!response.isSuccessful) {
                     loadFavorites()
-                    Log.e("FavoriteVM", "Delete failed: ${response.code()}")
+                    Log.e("Favorite", "Ошибка удаления: ${response.code()}")
                 }
             } catch (e: Exception) {
                 loadFavorites()
-                Log.e("FavoriteVM", "Delete error: ${e.message}")
+                Log.e("Favorite", "Ошибка удаления: ${e.message}")
             }
         }
     }

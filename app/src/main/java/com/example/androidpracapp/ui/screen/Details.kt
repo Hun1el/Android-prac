@@ -181,7 +181,7 @@ fun ProductContent(
         // Категория
         Text(
             text = currentProduct.categoryName ?: "Shoes",
-            style = AppTypography.titleLarge,
+            style = AppTypography.bodySmall,
             color = Hint,
             modifier = Modifier.padding(top = 8.dp)
         )
@@ -272,7 +272,7 @@ fun ProductContent(
             // Кнопка в корзину
             Button(
                 onClick = {  },
-                modifier = Modifier.weight(1f).height(52.dp),
+                modifier = Modifier.weight(1f).height(52.dp).padding(top = 8.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Accent
@@ -376,7 +376,7 @@ fun ExpandableText(text: String) {
                         stringResource(R.string.more)
                     },
                     color = Accent,
-                    style = AppTypography.labelLarge,
+                    style = AppTypography.labelMedium,
                     modifier = Modifier.padding(top = 4.dp).clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null

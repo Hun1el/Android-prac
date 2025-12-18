@@ -57,7 +57,9 @@ class ProductDetailViewModel(application: Application) : AndroidViewModel(applic
 
                 val favoritesDeferred = if (userId != null) {
                     async { favoriteService.getFavorites(userId = "eq.$userId") }
-                } else null
+                } else {
+                    null
+                }
 
                 val productsResponse = productsDeferred.await()
                 val categoriesResponse = categoriesDeferred.await()

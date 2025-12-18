@@ -47,7 +47,7 @@ class SignInViewModel : ViewModel() {
                 val user = User(email = email, password = password)
                 val response = RetrofitInstance.userManagementService.signIn(user)
 
-                Log.d("signIn", "Response Code: ${response.code()}")
+                Log.d("signIn", "Код ответа: ${response.code()}")
 
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()!!
@@ -77,7 +77,7 @@ class SignInViewModel : ViewModel() {
                     signInSuccessMutable.value = false
                 }
             } catch (e: Exception) {
-                Log.e("signIn", "Exception: ${e.message}", e)
+                Log.e("signIn", "Ошибка: ${e.message}", e)
                 e.printStackTrace()
                 signInErrorMutable.value = "Ошибка подключения: ${e.message}"
                 signInSuccessMutable.value = false

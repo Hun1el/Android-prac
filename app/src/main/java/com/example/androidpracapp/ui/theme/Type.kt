@@ -97,7 +97,7 @@ val AppTypography = Typography(
         lineHeight = 24.sp
     ),
 
-    // Subtitle Regular 16
+    // Subtitle Bold 16
     titleLarge = TextStyle(
         fontFamily = RalewayFontFamily,
         fontWeight = FontWeight.Bold,
