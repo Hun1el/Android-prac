@@ -1,3 +1,10 @@
+/**
+ * ViewModel избранных товаров
+ *
+ * @author Солоников Антон
+ * @date 17.12.2025
+ */
+
 package com.example.androidpracapp.ui.viewModel
 
 import android.app.Application
@@ -31,7 +38,7 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
         val id = sharedPrefs.getString("userId", null)
-        Log.d("FavoriteVM", "getUserIdFromPrefs: $id") // <-- ЛОГ 1
+        Log.d("FavoriteVM", "getUserIdFromPrefs: $id")
         return id
     }
 
@@ -41,18 +48,18 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             try {
                 val userId = getUserIdFromPrefs()
                 if (userId != null) {
-                    Log.d("FavoriteVM", "Запрос избранного для userId: $userId") // <-- ЛОГ 2
+                    Log.d("FavoriteVM", "Запрос избранного для userId: $userId")
 
                     val response = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
 
-                    Log.d("FavoriteVM", "Response Code: ${response.code()}") // <-- ЛОГ 3
+                    Log.d("FavoriteVM", "Response Code: ${response.code()}")
 
                     if (response.isSuccessful && response.body() != null) {
                         val body = response.body()!!
-                        Log.d("FavoriteVM", "Raw Body Size: ${body.size}") // <-- ЛОГ 4
+                        Log.d("FavoriteVM", "Raw Body Size: ${body.size}")
 
                         val mappedProducts = body.mapNotNull { it.products }
-                        Log.d("FavoriteVM", "Mapped Products Size: ${mappedProducts.size}") // <-- ЛОГ 5
+                        Log.d("FavoriteVM", "Mapped Products Size: ${mappedProducts.size}")
 
                         _favorites.value = mappedProducts
                     } else {
@@ -70,7 +77,6 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    // ... (методы add/remove оставьте как есть)
     fun addToFavorites(product: Product) {
         viewModelScope.launch {
             try {

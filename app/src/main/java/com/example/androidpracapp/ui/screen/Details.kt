@@ -1,3 +1,10 @@
+/**
+ * Экран просмотра деталей товара
+ *
+ * @author Солоников Антон
+ * @date 18.12.2025
+ */
+
 package com.example.androidpracapp.ui.screens
 
 import androidx.compose.animation.animateContentSize
@@ -86,7 +93,7 @@ fun ProductDetailScreen(
                 actions = {
                     IconButton(
                         onClick = { },
-                        modifier = Modifier.background(Block, CircleShape).size(44.dp).padding(end = 20.dp)
+                        modifier = Modifier.padding(end = 20.dp).clip(CircleShape).background(Block).size(44.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.shoping),
@@ -187,23 +194,21 @@ fun ProductContent(
             modifier = Modifier.padding(top = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(36.dp))
-
         // Картинка свайпа
         Box(
-            modifier = Modifier.fillMaxWidth().height(400.dp),
+            modifier = Modifier.fillMaxWidth().height(320.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             Image(
                 painter = painterResource(id = R.drawable.podium),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(60.dp).offset(y = (-20).dp),
+                modifier = Modifier.fillMaxWidth(),
                 contentScale = ContentScale.FillWidth
             )
 
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxWidth().height(230.dp).padding(bottom = 20.dp), // Отступ снизу, чтобы "стоять" на подиуме
+                modifier = Modifier.fillMaxWidth().height(230.dp).padding(bottom = 20.dp),
                 contentPadding = PaddingValues(horizontal = 4.dp),
                 verticalAlignment = Alignment.Bottom
             ) { page ->
@@ -212,7 +217,7 @@ fun ProductContent(
                     Image(
                         painter = painterResource(id = R.drawable.air_max_big),
                         contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(0.9f).aspectRatio(1.5f),
+                        modifier = Modifier.fillMaxWidth(0.9f).aspectRatio(1.1f),
                         contentScale = ContentScale.Fit
                     )
                 }

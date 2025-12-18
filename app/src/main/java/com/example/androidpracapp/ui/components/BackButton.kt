@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.theme.Background
+import com.example.androidpracapp.ui.theme.Text
 
 @Composable
 fun BackButton(
@@ -40,7 +41,7 @@ fun BackButton(
             painter = painterResource(id = R.drawable.back),
             contentDescription = "Back",
             modifier = Modifier.size(24.dp),
-            tint = com.example.androidpracapp.ui.theme.Text
+            tint = Text
         )
     }
 }
