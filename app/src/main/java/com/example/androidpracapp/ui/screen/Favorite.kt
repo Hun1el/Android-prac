@@ -137,7 +137,7 @@ fun FavoriteScreenContent(
                         ProductCard(
                             data = ProductCardData(
                                 imageRes = R.drawable.air_max,
-                                label = if (product.is_best_seller == true) {
+                                label = if (product.isBestSeller == true) {
                                     "BEST SELLER"
                                 } else {
                                     ""
@@ -154,22 +154,4 @@ fun FavoriteScreenContent(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun FavoriteScreenPreview() {
-    val dummyProducts = listOf(
-        Product("1", "Nike Air Max", "Desc", 752.0, "1", true),
-        Product("2", "Adidas Ultra", "Desc", 1200.0, "1", false)
-    )
-
-    FavoriteScreenContent(
-        favorites = dummyProducts,
-        isLoading = false,
-        onBackClick = {},
-        onFavoriteClick = {},
-        selectedTabIndex = 1,
-        onTabSelected = {}
-    )
 }

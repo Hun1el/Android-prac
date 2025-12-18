@@ -277,7 +277,7 @@ fun HomeScreen(
                         }
                     }
 
-                    val popularProducts = products.filter { it.is_best_seller == true }
+                    val popularProducts = products.filter { it.isBestSeller == true }
 
                     items(popularProducts.size) { index ->
                         val product = popularProducts[index]

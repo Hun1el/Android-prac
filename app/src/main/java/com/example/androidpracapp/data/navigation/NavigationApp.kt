@@ -11,9 +11,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import com.example.androidpracapp.R
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
 import com.example.androidpracapp.ui.screen.CatalogScreen
@@ -27,6 +29,7 @@ import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.screen.SplashScreen
 import com.example.androidpracapp.ui.screen.VerificationScreen
+import com.example.androidpracapp.ui.screens.ProductDetailScreen
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
@@ -135,7 +138,21 @@ fun NavigationApp(navController: NavHostController) {
                 viewModel = catalogViewModel,
                 selectedTabIndex = 0,
                 onTabSelected = { index -> navigateToTab(index) },
-                onCategoryClick = { navController.navigate(NavRoute.Catalog.route) }
+                onCategoryClick = { navController.navigate(NavRoute.Catalog.route) },
+                onProductClick = { product ->
+                    navController.navigate("${NavRoute.ProductDetails.route}/${product.id}")
+                }
+            )
+        }
+
+        composable(
+            route = "${NavRoute.ProductDetails.route}/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(
+                startProductId = productId,
+                onBackClick = { navController.popBackStack() },
             )
         }
 

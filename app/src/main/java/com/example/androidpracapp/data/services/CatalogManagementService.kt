@@ -1,5 +1,6 @@
 package com.example.androidpracapp.data.services
 
+import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -20,16 +21,20 @@ interface CatalogManagementService {
     suspend fun getProductsByCategory(@Query("category_id") categoryId: String, @Query("select") select: String = "*"): Response<List<Product>>
 }
 
-data class Category(
-    val id: String,
-    val title: String
-)
-
 data class Product(
     val id: String,
     val title: String,
     val description: String,
     val cost: Double,
     val category_id: String?,
-    val is_best_seller: Boolean?
+    @SerializedName("is_best_seller") val isBestSeller: Boolean?,
+
+    var categoryName: String? = null,
+    var isFavorite: Boolean = false,
+    val imageResId: Int? = null
+)
+
+data class Category(
+    val id: String,
+    val title: String
 )
