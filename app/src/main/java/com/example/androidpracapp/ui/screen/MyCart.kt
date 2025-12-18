@@ -34,6 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
+import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
 import com.example.androidpracapp.ui.theme.AppTypography
@@ -68,7 +72,7 @@ fun CartScreen(
     val totalCost by viewModel.totalCost.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    val totalItemsCount = cartItems.sumOf { it.count }
+    val totalItemsCount = cartItems.size
 
     Scaffold(
         containerColor = Background,
@@ -170,19 +174,32 @@ fun CartItemRow(
     onDecrease: () -> Unit,
     onDelete: () -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        MessageDialog(
+            title = "Удалить товар?",
+            description = "Вы уверены, что хотите удалить ${item.product.title} из корзины?",
+            onOk = {
+                showDeleteDialog = false
+                onDelete()
+            },
+            onCancel = {
+                showDeleteDialog = false
+            },
+            okButtonText = "Да",
+            cancelButtonText = "Нет",
+            cancelButtonColor = Accent,
+            okButtonColor = Red
+        )
+    }
+
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(140.dp)  // ← увеличил с 120.dp на 140.dp
-            .background(Block, RoundedCornerShape(16.dp))
-            .padding(10.dp),
+        modifier = Modifier.fillMaxWidth().height(140.dp).background(Block, RoundedCornerShape(16.dp)).padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Background),
+            modifier = Modifier.size(100.dp).clip(RoundedCornerShape(16.dp)).background(Background),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -196,9 +213,7 @@ fun CartItemRow(
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
@@ -221,7 +236,7 @@ fun CartItemRow(
             modifier = Modifier.fillMaxHeight()
         ) {
             IconButton(
-                onClick = onDelete,
+                onClick = { showDeleteDialog = true },
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
@@ -237,13 +252,12 @@ fun CartItemRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .background(
-                            if (item.count > 1) Accent else Hint,
-                            RoundedCornerShape(6.dp)
-                        )
-                        .clickable { onDecrease() },
+                    modifier = Modifier.size(28.dp).background(
+                        if (item.count > 1) Accent else Hint,
+                        RoundedCornerShape(6.dp)
+                    ).clickable(enabled = item.count > 1) {
+                        if (item.count > 1) onDecrease()
+                    },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -261,10 +275,7 @@ fun CartItemRow(
                 )
 
                 Box(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .background(Accent, RoundedCornerShape(6.dp))
-                        .clickable { onIncrease() },
+                    modifier = Modifier.size(28.dp).background(Accent, RoundedCornerShape(6.dp)).clickable { onIncrease() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -278,7 +289,6 @@ fun CartItemRow(
         }
     }
 }
-
 
 @Composable
 fun CartBottomBar(

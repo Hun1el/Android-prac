@@ -40,6 +40,7 @@ import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
+import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.theme.SubTextLight
 import com.example.androidpracapp.ui.theme.Text
@@ -51,7 +52,11 @@ fun MessageDialog(
     onOk: () -> Unit = {},
     onCancel: (() -> Unit)? = null,
     icon: Painter? = null,
-    showButtons: Boolean = true
+    showButtons: Boolean = true,
+    okButtonText: String = "OK",
+    cancelButtonText: String = "Отмена",
+    okButtonColor: Color = Accent,
+    cancelButtonColor: Color = SubTextLight
 ) {
     Dialog(onDismissRequest = { }) {
         Box(
@@ -112,13 +117,13 @@ fun MessageDialog(
                                     onClick = onCancel,
                                     modifier = Modifier.weight(1f).height(48.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = SubTextLight,
+                                        containerColor = cancelButtonColor,
                                         contentColor = Text
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text(
-                                        text = "Отмена",
+                                        text = cancelButtonText,
                                         style = AppTypography.labelMedium
                                     )
                                 }
@@ -130,13 +135,13 @@ fun MessageDialog(
                                 onClick = onOk,
                                 modifier = Modifier.weight(1f).height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Accent,
+                                    containerColor = okButtonColor,
                                     contentColor = Block
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text(
-                                    text = "OK",
+                                    text = okButtonText,
                                     style = AppTypography.labelMedium
                                 )
                             }
