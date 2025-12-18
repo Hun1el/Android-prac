@@ -76,4 +76,6 @@
     <string name="done">Done</string>
     <string name="redact">Edit</string>
     <string name="fio">No Name</string>
+    <string name="fav_empty">The favorites list is empty</string>
+    <string name="desc_less">Collapse</string>
 </resources>

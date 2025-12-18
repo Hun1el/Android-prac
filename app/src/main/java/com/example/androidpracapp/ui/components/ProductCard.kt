@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
@@ -66,18 +67,18 @@ fun ProductCard(
     data: ProductCardData,
     modifier: Modifier = Modifier
 ) {
-    var isFavorite by remember { mutableStateOf(data.isFavorite) }
-    var isInCart by remember { mutableStateOf(data.isInCart) }
+    var isFavorite by remember(data.isFavorite) { mutableStateOf(data.isFavorite) }
+    var isInCart by remember(data.isInCart) { mutableStateOf(data.isInCart) }
 
     Box(
         modifier = modifier.size(180.dp).shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(12.dp),
-                clip = false
-            ).background(
-                color = Block,
-                shape = RoundedCornerShape(12.dp)
-            )
+            elevation = 4.dp,
+            shape = RoundedCornerShape(12.dp),
+            clip = false
+        ).background(
+            color = Block,
+            shape = RoundedCornerShape(12.dp)
+        )
     ) {
         Column(
             modifier = Modifier.size(180.dp),
@@ -128,28 +129,27 @@ fun ProductCard(
 
                 Text(
                     text = data.label,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = AppTypography.labelSmall,
                     color = Accent,
                     modifier = Modifier.padding(top = 8.dp),
                 )
 
                 Text(
                     text = data.title,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = AppTypography.bodySmall,
                     color = Hint,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
 
-
             Row(
-                modifier = Modifier.height(30.dp).padding(start = 10.dp),
+                modifier = Modifier.height(40.dp).padding(start = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = data.price,
-                    style = MaterialTheme.typography.labelSmall,
+                    style = AppTypography.labelMedium,
                     color = Text,
                     modifier = Modifier.padding(top = 1.dp),
                     textAlign = TextAlign.Start
@@ -158,18 +158,18 @@ fun ProductCard(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Box(
-                    modifier = Modifier.fillMaxHeight().size(30.dp).background(
-                            color = Accent,
-                            shape = RoundedCornerShape(
-                                topStart = 12.dp,
-                                bottomStart = 0.dp,
-                                bottomEnd = 12.dp,
-                                topEnd = 0.dp
-                            )
-                        ).clickable {
-                            isInCart = !isInCart
-                            data.onAddClick()
-                        },
+                    modifier = Modifier.fillMaxHeight().size(width = 40.dp, height = 40.dp).background(
+                        color = Accent,
+                        shape = RoundedCornerShape(
+                            topStart = 12.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 12.dp,
+                            topEnd = 0.dp
+                        )
+                    ).clickable {
+                        isInCart = !isInCart
+                        data.onAddClick()
+                    },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

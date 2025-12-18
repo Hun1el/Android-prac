@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.GradientBoardDark
 import com.example.androidpracapp.ui.theme.GradientBoardLight
@@ -103,7 +104,7 @@ fun OnboardScreen1(
         } else {
             0f
         },
-        animationSpec = tween(1800)
+        animationSpec = tween(900)
     )
 
     val gradientBrush = Brush.verticalGradient(
@@ -119,16 +120,16 @@ fun OnboardScreen1(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(75.dp))
 
         Text(
             text = stringResource(R.string.welcome),
-            style = MaterialTheme.typography.displaySmall,
+            style = AppTypography.displaySmall,
             color = Block,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         Image(
             painter = painterResource(id = R.drawable.onboard1),
@@ -160,15 +161,13 @@ fun OnboardScreen1(
             )
         }
 
-        Spacer(modifier = Modifier.height(136.dp))
-
         Spacer(modifier = Modifier.weight(1f))
 
         PrimaryButton(
             text = stringResource(R.string.start),
             onClick = { onStartClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            style = AppTypography.labelMedium,
             textColor = Text,
             backgroundColor = Block
         )
@@ -189,7 +188,7 @@ fun OnboardScreen2(
         } else {
             0f
         },
-        animationSpec = tween(1800)
+        animationSpec = tween(900)
     )
 
     val gradientBrush = Brush.verticalGradient(
@@ -205,7 +204,7 @@ fun OnboardScreen2(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(75.dp))
 
         Image(
             painter = painterResource(id = R.drawable.onboard2),
@@ -214,11 +213,11 @@ fun OnboardScreen2(
             contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.weight(0.5f))
 
         Text(
             text = stringResource(R.string.journey),
-            style = MaterialTheme.typography.displaySmall,
+            style = AppTypography.displayLarge,
             color = Block,
             textAlign = TextAlign.Center
         )
@@ -227,7 +226,7 @@ fun OnboardScreen2(
 
         Text(
             text = stringResource(R.string.collection),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodySmall,
             color = SubTextLight,
             textAlign = TextAlign.Center
         )
@@ -260,8 +259,8 @@ fun OnboardScreen2(
         PrimaryButton(
             text = stringResource(R.string.next),
             onClick = { onNextClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            style = AppTypography.labelMedium,
             textColor = Text,
             backgroundColor = Block
         )
@@ -282,7 +281,7 @@ fun OnboardScreen3(
         } else {
             0f
         },
-        animationSpec = tween(1800)
+        animationSpec = tween(900)
     )
 
     val gradientBrush = Brush.verticalGradient(
@@ -298,7 +297,7 @@ fun OnboardScreen3(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(75.dp))
 
         Image(
             painter = painterResource(id = R.drawable.onboard3),
@@ -307,25 +306,25 @@ fun OnboardScreen3(
             contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.weight(0.5f))
 
         Text(
             text = stringResource(R.string.strength),
-            style = MaterialTheme.typography.displaySmall,
+            style = AppTypography.displayLarge,
             color = Block,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.plant),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodySmall,
             color = SubTextLight,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(52.dp))
 
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -353,8 +352,8 @@ fun OnboardScreen3(
         PrimaryButton(
             text = stringResource(R.string.next),
             onClick = { onStartClick() },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            style = AppTypography.labelMedium,
             textColor = Text,
             backgroundColor = Block
         )

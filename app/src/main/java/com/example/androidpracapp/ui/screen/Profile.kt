@@ -234,7 +234,7 @@ fun ProfileScreen(
 
                 Text(
                     text = displayName,
-                    style = AppTypography.titleSmall,
+                    style = AppTypography.headlineMedium,
                     color = Text
                 )
 
@@ -242,7 +242,7 @@ fun ProfileScreen(
                     Text(
                         text = stringResource(R.string.change_photo),
                         color = Accent,
-                        style = AppTypography.labelSmall,
+                        style = AppTypography.labelMedium,
                         modifier = Modifier.padding(top = 8.dp).clickable {
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
@@ -368,7 +368,7 @@ fun ProfileField(
                 },
                 unfocusedIndicatorColor = Transparent
             ),
-            textStyle = AppTypography.labelMedium.copy(
+            textStyle = AppTypography.bodySmall.copy(
                 color = Text
             ),
             trailingIcon = if (showChangeIcon) {

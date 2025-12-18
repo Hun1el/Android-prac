@@ -11,12 +11,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import com.example.androidpracapp.R
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
+import com.example.androidpracapp.ui.screen.CatalogScreen
 import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
+import com.example.androidpracapp.ui.screen.FavoriteScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
 import com.example.androidpracapp.ui.screen.HomeScreen
 import com.example.androidpracapp.ui.screen.OnboardPagerScreen
@@ -25,6 +29,9 @@ import com.example.androidpracapp.ui.screen.RegisterAccountScreen
 import com.example.androidpracapp.ui.screen.SignInScreen
 import com.example.androidpracapp.ui.screen.SplashScreen
 import com.example.androidpracapp.ui.screen.VerificationScreen
+import com.example.androidpracapp.ui.screens.ProductDetailScreen
+import com.example.androidpracapp.ui.viewModel.CatalogViewModel
+import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -32,6 +39,7 @@ import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 fun NavigationApp(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = viewModel()
     val signInViewModel: SignInViewModel = viewModel()
+    val catalogViewModel: CatalogViewModel = viewModel()
 
     fun navigateToTab(index: Int) {
         val route = when (index) {
@@ -127,13 +135,62 @@ fun NavigationApp(navController: NavHostController) {
 
         composable(NavRoute.Home.route) {
             HomeScreen(
+                viewModel = catalogViewModel,
                 selectedTabIndex = 0,
-                onTabSelected = { index -> navigateToTab(index) }
+                onTabSelected = { index -> navigateToTab(index) },
+                onCategoryClick = { navController.navigate(NavRoute.Catalog.route) },
+                onProductClick = { product ->
+                    navController.navigate("${NavRoute.ProductDetails.route}/${product.id}")
+                }
+            )
+        }
+
+        composable(
+            route = "${NavRoute.ProductDetails.route}/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(
+                startProductId = productId,
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+
+        composable(NavRoute.Catalog.route) {
+            CatalogScreen(
+                viewModel = catalogViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 
         composable(NavRoute.Favorite.route) {
-            PlaceholderScreen(stringResource(R.string.favorite), 1) { index -> navigateToTab(index) }
+            val favoriteViewModel: FavoriteViewModel = viewModel()
+
+            androidx.compose.material3.Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 1,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = {
+                            navController.navigate(NavRoute.Orders.route)
+                        },
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    FavoriteScreen(
+                        viewModel = favoriteViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
         }
 
         composable(NavRoute.Orders.route) {

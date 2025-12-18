@@ -48,6 +48,7 @@ import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.SubTextDark
@@ -95,7 +96,7 @@ fun CreateNewPasswordScreen(
 
         Text(
             text = stringResource(id = R.string.new_password1),
-            style = MaterialTheme.typography.displayMedium,
+            style = AppTypography.displayMedium,
             textAlign = TextAlign.Center
         )
 
@@ -104,16 +105,16 @@ fun CreateNewPasswordScreen(
         Text(
             text = stringResource(id = R.string.new_password2),
             color = SubTextDark,
-            style = MaterialTheme.typography.titleLarge,
+            style = AppTypography.bodySmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(38.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Text(
             text = stringResource(id = R.string.password),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
@@ -127,7 +128,7 @@ fun CreateNewPasswordScreen(
                 Text(
                     "••••••••",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.bodySmall
                 )
             },
             visualTransformation = if (isPasswordVisible1) {
@@ -164,7 +165,7 @@ fun CreateNewPasswordScreen(
 
         Text(
             text = stringResource(id = R.string.password_confirmation),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )
@@ -178,7 +179,7 @@ fun CreateNewPasswordScreen(
                 Text(
                     "••••••••",
                     color = Hint,
-                    style = MaterialTheme.typography.labelMedium
+                    style = AppTypography.bodySmall
                 )
             },
             visualTransformation = if (isPasswordVisible2) {
@@ -239,7 +240,7 @@ fun CreateNewPasswordScreen(
                 }
             },
             enabled = password.isNotEmpty() && confirmPassword.isNotEmpty(),
-            style = MaterialTheme.typography.labelMedium,
+            style = AppTypography.headlineSmall,
             textColor = Background
         )
 

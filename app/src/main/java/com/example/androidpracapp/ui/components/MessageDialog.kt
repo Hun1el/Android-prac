@@ -36,8 +36,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
+import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
+import com.example.androidpracapp.ui.theme.SubTextDark
+import com.example.androidpracapp.ui.theme.SubTextLight
+import com.example.androidpracapp.ui.theme.Text
 
 @Composable
 fun MessageDialog(
@@ -83,7 +88,7 @@ fun MessageDialog(
 
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = AppTypography.titleLarge,
                         textAlign = TextAlign.Center
                     )
 
@@ -91,8 +96,8 @@ fun MessageDialog(
 
                     Text(
                         text = description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Hint,
+                        style = AppTypography.bodySmall,
+                        color = SubTextDark,
                         textAlign = TextAlign.Center
                     )
 
@@ -107,14 +112,14 @@ fun MessageDialog(
                                     onClick = onCancel,
                                     modifier = Modifier.weight(1f).height(48.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFFD8D8D8),
-                                        contentColor = Color(0xFF707B81)
+                                        containerColor = SubTextLight,
+                                        contentColor = Text
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text(
                                         text = "Отмена",
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = AppTypography.labelMedium
                                     )
                                 }
 
@@ -126,13 +131,13 @@ fun MessageDialog(
                                 modifier = Modifier.weight(1f).height(48.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Accent,
-                                    contentColor = Background
+                                    contentColor = Block
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text(
                                     text = "OK",
-                                    style = MaterialTheme.typography.labelMedium
+                                    style = AppTypography.labelMedium
                                 )
                             }
                         }

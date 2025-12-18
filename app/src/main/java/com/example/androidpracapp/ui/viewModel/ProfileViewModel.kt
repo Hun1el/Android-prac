@@ -1,3 +1,10 @@
+/**
+ * ViewModel профиля
+ *
+ * @author Солоников Антон
+ * @date 17.12.2025
+ */
+
 package com.example.androidpracapp.ui.viewModel
 
 import android.content.Context
@@ -49,7 +56,7 @@ class ProfileViewModel : ViewModel() {
             Log.d("ProfileViewModel", "Начинаем загрузку профиля для userId: $userId")
 
             try {
-                val response = RetrofitInstance.userManagementService.getUserProfile("eq.$userId")
+                val response = RetrofitInstance.profileManagementService.getUserProfile("eq.$userId")
                 Log.d("ProfileViewModel", "Ответ сервера (getUserProfile): код=${response.code()}, message=${response.message()}")
 
                 if (response.isSuccessful && !response.body().isNullOrEmpty()) {
@@ -92,7 +99,7 @@ class ProfileViewModel : ViewModel() {
 
             try {
                 val updateData = UserProfileUpdate(firstname, lastname, address, phone, photoBase64 ?: _profileState.value?.photo)
-                val responsePatch = RetrofitInstance.userManagementService.updateUserProfile("eq.$userId", updateData)
+                val responsePatch = RetrofitInstance.profileManagementService.updateUserProfile("eq.$userId", updateData)
 
                 if (responsePatch.isSuccessful && !responsePatch.body().isNullOrEmpty()) {
                     Log.d("ProfileViewModel", "Профиль обновлен (PATCH)")
@@ -110,7 +117,7 @@ class ProfileViewModel : ViewModel() {
                         phone = phone,
                         photo = photoBase64
                     )
-                    val responsePost = RetrofitInstance.userManagementService.createUserProfile(createData)
+                    val responsePost = RetrofitInstance.profileManagementService.createUserProfile(createData)
 
                     if (responsePost.isSuccessful && !responsePost.body().isNullOrEmpty()) {
                         Log.d("ProfileViewModel", "Профиль создан (POST)")

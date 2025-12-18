@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androidpracapp.ui.theme.Accent
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.Background
 import com.example.androidpracapp.ui.theme.Disable
 
@@ -37,7 +38,7 @@ fun PrimaryButton(
     height: Dp = 50.dp,
     width: Modifier = Modifier.fillMaxWidth(),
     cornerRadius: Dp = 14.dp,
-    style: TextStyle = MaterialTheme.typography.labelMedium,
+    style: TextStyle = AppTypography.labelMedium,
     textColor: Color = Background,
     backgroundColor: Color = Accent,
     disabledBackgroundColor: Color = Disable

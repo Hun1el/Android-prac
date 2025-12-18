@@ -16,32 +16,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.theme.Background
+import com.example.androidpracapp.ui.theme.Text
 
 @Composable
 fun BackButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Background
 ) {
     Box(
-        modifier = modifier
-            .size(44.dp)
-            .background(
-                color = Background,
+        modifier = modifier.size(44.dp).background(
+                color = backgroundColor,
                 shape = CircleShape
-            )
-            .clickable { onClick() },
+            ).clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
             painter = painterResource(id = R.drawable.back),
             contentDescription = "Back",
             modifier = Modifier.size(24.dp),
-            tint = com.example.androidpracapp.ui.theme.Text
+            tint = Text
         )
     }
 }

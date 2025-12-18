@@ -39,6 +39,7 @@ import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.OTPInput
 import com.example.androidpracapp.ui.components.ResendCodeButton
+import com.example.androidpracapp.ui.theme.AppTypography
 import com.example.androidpracapp.ui.theme.SubTextDark
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 
@@ -101,7 +102,7 @@ fun VerificationScreen(
 
         Text(
             text = stringResource(id = R.string.otp),
-            style = MaterialTheme.typography.displayMedium,
+            style = AppTypography.displayMedium,
             textAlign = TextAlign.Center
         )
 
@@ -110,7 +111,7 @@ fun VerificationScreen(
         Text(
             text = stringResource(id = R.string.check_email2),
             color = SubTextDark,
-            style = MaterialTheme.typography.titleLarge,
+            style = AppTypography.bodySmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -119,7 +120,7 @@ fun VerificationScreen(
 
         Text(
             text = stringResource(id = R.string.otp_code),
-            style = MaterialTheme.typography.bodyMedium,
+            style = AppTypography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start
         )

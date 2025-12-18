@@ -75,4 +75,6 @@
     <string name="done">Готово</string>
     <string name="redact">Изменить</string>
     <string name="fio">Имя Фамилия</string>
+    <string name="fav_empty">Список избранного пустого</string>
+    <string name="desc_less">Свернуть</string>
 </resources>
