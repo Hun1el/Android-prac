@@ -6,7 +6,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
+import com.example.androidpracapp.data.services.CartEntry
+import com.example.androidpracapp.data.services.CreateOrderItemRequest
 import com.example.androidpracapp.data.services.CreateOrderRequest
+import com.example.androidpracapp.data.services.Product
 import com.example.androidpracapp.data.services.UserProfile
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,16 +59,18 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private val _validationError = MutableStateFlow<String?>(null)
     val validationError = _validationError.asStateFlow()
 
-    // --- НОВОЕ: Поле валидации формы ---
+    private var cachedCartItems: List<CartEntry> = emptyList()
+    private var cachedProducts: List<Product> = emptyList()
+
     val isFormValid = combine(_contactInfo, _address, _cardNumber) { contact, addr, card ->
         val isEmailValid = checkEmail(contact.email) == null
         val isPhoneValid = contact.phone.isNotBlank()
         val isAddressValid = addr.fullAddress.isNotBlank()
-        val isCardValid = card.isNotBlank() && card.length >= 16 // Простая проверка длины
+        val isCardValid = card.isNotBlank() && card.length >= 16
 
         isEmailValid && isPhoneValid && isAddressValid && isCardValid
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-    // ----------------------------------
+
 
     init {
         Log.d("Checkout", "CheckoutViewModel initialized")
@@ -115,6 +120,10 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                 if (cartResponse.isSuccessful && productsResponse.isSuccessful) {
                     val cartEntries = cartResponse.body() ?: emptyList()
                     val allProducts = productsResponse.body() ?: emptyList()
+
+                    // Сохраняем в кеш
+                    cachedCartItems = cartEntries
+                    cachedProducts = allProducts
 
                     val calculatedSubtotal = cartEntries.sumOf { entry ->
                         val product = allProducts.find { it.id == entry.product_id }
@@ -187,7 +196,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun placeOrder(onSuccess: () -> Unit) {
-        if (!isFormValid.value) return // Доп. защита
+        if (!isFormValid.value) return
 
         viewModelScope.launch {
             _isLoading.value = true
@@ -208,17 +217,43 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                     delivery_coast = _delivery.value.toLong()
                 )
 
-                val response = RetrofitInstance.orderManagementService.createOrder(orderRequest)
+                val orderResponse = RetrofitInstance.orderManagementService.createOrder(orderRequest)
 
-                if (response.isSuccessful) {
+                if (orderResponse.isSuccessful && !orderResponse.body().isNullOrEmpty()) {
+                    val newOrderId = orderResponse.body()!![0].id
+                    Log.d("Checkout", "Order created. ID: $newOrderId")
+
+                    val orderItemsToAdd = cachedCartItems.mapNotNull { cartItem ->
+                        val product = cachedProducts.find { it.id == cartItem.product_id }
+                        if (product != null) {
+                            CreateOrderItemRequest(
+                                order_id = newOrderId,
+                                product_id = product.id,
+                                count = cartItem.count ?: 1,
+                                coast = product.cost,
+                                title = product.title
+                            )
+                        } else null
+                    }
+
+                    if (orderItemsToAdd.isNotEmpty()) {
+                        val itemsResponse = RetrofitInstance.orderManagementService.addOrderItems(orderItemsToAdd)
+                        if (!itemsResponse.isSuccessful) {
+                            Log.e("Checkout", "Error adding items: ${itemsResponse.code()}")
+                        }
+                    }
+
                     clearCart(userId)
                     _cardNumber.value = ""
                     onSuccess()
+
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    _validationError.value = "Ошибка: ${response.code()}"
+                    val errorBody = orderResponse.errorBody()?.string()
+                    Log.e("Checkout", "Order creation failed: $errorBody")
+                    _validationError.value = "Ошибка: ${orderResponse.code()}"
                 }
             } catch (e: Exception) {
+                Log.e("Checkout", "Exception in placeOrder", e)
                 _validationError.value = "Ошибка: ${e.message}"
             } finally {
                 _isLoading.value = false
