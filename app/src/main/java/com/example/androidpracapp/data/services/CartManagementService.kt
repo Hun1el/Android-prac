@@ -36,4 +36,7 @@ interface CartManagementService {
 
     @DELETE("rest/v1/cart")
     suspend fun deleteCartItem(@Query("id") id: String): Response<Unit>
+
+    @DELETE("rest/v1/cart")
+    suspend fun clearCart(@Query("user_id") userId: String): Response<Unit>
 }

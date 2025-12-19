@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.litert.support.api)
     implementation(libs.play.services.maps)
     implementation(libs.gms.play.services.location)
+    implementation(libs.billing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

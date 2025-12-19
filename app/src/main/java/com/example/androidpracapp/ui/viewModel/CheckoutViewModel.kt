@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
-import com.example.androidpracapp.data.services.PaymentCard
+import com.example.androidpracapp.data.services.CreateOrderRequest
 import com.example.androidpracapp.data.services.UserProfile
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,16 +23,6 @@ data class Address(
 ) {
     fun toDisplayString(): String = fullAddress
 }
-
-data class CreateOrderRequest(
-    val user_id: String,
-    val total_amount: Double,
-    val delivery_address: String,
-    val phone: String,
-    val email: String,
-    val payment_method: String,
-    val items: List<Map<String, Any>>
-)
 
 class CheckoutViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -64,6 +54,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     val validationError = _validationError.asStateFlow()
 
     init {
+        Log.d("Checkout", "CheckoutViewModel initialized")
         loadCheckoutData()
         loadCartAndCalculate()
     }
@@ -71,27 +62,34 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private fun getUserIdFromPrefs(): String? {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
-        return sharedPrefs.getString("userId", null)
+        val userId = sharedPrefs.getString("userId", null)
+        Log.d("Checkout", "getUserIdFromPrefs: userId=$userId")
+        return userId
     }
 
     private fun getEmailFromPrefs(): String? {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
-        return sharedPrefs.getString("userEmail", "")
+        val email = sharedPrefs.getString("userEmail", "")
+        Log.d("Checkout", "getEmailFromPrefs: email=$email")
+        return email
     }
 
     fun checkEmail(email: String): String? {
         val regex = Regex("^[a-z0-9]+@[a-z0-9]+\\.[a-z]{2,}$")
-        return when {
+        val error = when {
             email.isBlank() -> "Email не может быть пустым"
             !regex.matches(email) -> "Email должен быть валидным (login@domain.ru)"
             else -> null
         }
+        Log.d("Checkout", "checkEmail: email=$email, error=$error")
+        return error
     }
 
     private fun loadCartAndCalculate() {
         val userId = getUserIdFromPrefs() ?: return
 
+        Log.d("Checkout", "loadCartAndCalculate: starting for userId=$userId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -116,7 +114,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                     _total.value = calculatedSubtotal + _delivery.value
                 }
             } catch (e: Exception) {
-                Log.e("CheckoutViewModel", "Error calculating: ${e.message}")
+                Log.e("Checkout", "loadCartAndCalculate: error=${e.message}", e)
             } finally {
                 _isLoading.value = false
             }
@@ -126,10 +124,12 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private fun loadCheckoutData() {
         val userId = getUserIdFromPrefs() ?: return
 
+        Log.d("Checkout", "loadCheckoutData: starting for userId=$userId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response = RetrofitInstance.profileManagementService.getUserProfile("eq.$userId")
+
                 if (response.isSuccessful && !response.body().isNullOrEmpty()) {
                     updateDataFromProfile(response.body()!![0])
                 } else {
@@ -152,11 +152,12 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private fun loadLocalData() {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
-        _contactInfo.value = ContactInfo(
-            phone = sharedPrefs.getString("userPhone", "") ?: "",
-            email = getEmailFromPrefs() ?: ""
-        )
-        _address.value = Address(fullAddress = sharedPrefs.getString("userAddress", "") ?: "")
+        val phone = sharedPrefs.getString("userPhone", "") ?: ""
+        val email = getEmailFromPrefs() ?: ""
+        val address = sharedPrefs.getString("userAddress", "") ?: ""
+
+        _contactInfo.value = ContactInfo(phone = phone, email = email)
+        _address.value = Address(fullAddress = address)
     }
 
     fun updateContactInfo(phone: String, email: String) {
@@ -178,36 +179,69 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
             _validationError.value = emailError
             return
         }
-
         if (_cardNumber.value.isBlank()) {
             _validationError.value = "Укажите номер карты"
+            return
+        }
+        if (_address.value.fullAddress.isBlank()) {
+            _validationError.value = "Укажите адрес доставки"
             return
         }
 
         viewModelScope.launch {
             _isLoading.value = true
+            _validationError.value = null
             try {
-                val userId = getUserIdFromPrefs() ?: return@launch
+                val userId = getUserIdFromPrefs() ?: run {
+                    _validationError.value = "Ошибка: пользователь не найден"
+                    _isLoading.value = false
+                    return@launch
+                }
 
                 val orderRequest = CreateOrderRequest(
                     user_id = userId,
-                    total_amount = _total.value,
-                    delivery_address = _address.value.toDisplayString(),
-                    phone = _contactInfo.value.phone,
                     email = _contactInfo.value.email,
-                    payment_method = _cardNumber.value,
-                    items = emptyList()
+                    phone = _contactInfo.value.phone,
+                    address = _address.value.fullAddress,
+                    payment_id = null,
+                    delivery_coast = _delivery.value.toLong()
                 )
 
-                val response = RetrofitInstance.orderService.createOrder(orderRequest)
+                Log.d("Checkout", "placeOrder: sending request...")
+
+                val response = RetrofitInstance.orderManagementService.createOrder(orderRequest)
+
                 if (response.isSuccessful) {
+                    Log.d("Checkout", "placeOrder: SUCCESS! Code=${response.code()}")
+                    clearCart(userId)
+                    _cardNumber.value = ""
                     onSuccess()
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("Checkout", "placeOrder: failed code=${response.code()}, error=$errorBody")
+                    _validationError.value = "Ошибка: ${response.code()}"
                 }
             } catch (e: Exception) {
-                Log.e("Checkout", "Error: ${e.message}")
+                Log.e("Checkout", "placeOrder: exception", e)
+                _validationError.value = "Ошибка: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
         }
+    }
+
+    private fun clearCart(userId: String) {
+        viewModelScope.launch {
+            try {
+                cartService.clearCart(userId = "eq.$userId")
+            } catch (e: Exception) {
+                Log.e("Checkout", "clearCart: error", e)
+            }
+        }
+    }
+
+    fun refreshCheckoutData() {
+        loadCheckoutData()
+        loadCartAndCalculate()
     }
 }

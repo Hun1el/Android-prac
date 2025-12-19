@@ -5,7 +5,6 @@ import com.example.androidpracapp.data.services.CartManagementService
 import com.example.androidpracapp.data.services.CatalogManagementService
 import com.example.androidpracapp.data.services.FavoriteManagementService
 import com.example.androidpracapp.data.services.OrderManagementService
-import com.example.androidpracapp.data.services.PaymentService
 import com.example.androidpracapp.data.services.ProfileManagementService
 import com.example.androidpracapp.data.services.UserManagementService
 import okhttp3.Interceptor
@@ -58,6 +57,5 @@ object RetrofitInstance {
     val catalogManagementService = retrofit.create(CatalogManagementService::class.java)
     val favoriteManagementService = retrofit.create(FavoriteManagementService::class.java)
     val cartManagementService = retrofit.create(CartManagementService::class.java)
-    val orderService = retrofit.create(OrderManagementService::class.java)
-    val paymentService = retrofit.create(PaymentService::class.java)
+    val orderManagementService = retrofit.create(OrderManagementService::class.java)
 }
