@@ -80,4 +80,10 @@
     <string name="in_cart">В корзине</string>
     <string name="no_cart1">Корзина пуста</string>
     <string name="no_cart2">Добавьте товары из каталога</string>
+    <string name="country">Страна</string>
+    <string name="city">Город</string>
+    <string name="street">Улица</string>
+    <string name="home1">Дом</string>
+    <string name="home2">Квартира</string>
+    <string name="home3">Не указан</string>
 </resources>

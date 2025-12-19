@@ -1,5 +1,9 @@
 package com.example.androidpracapp.ui.screen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BackButton
@@ -53,8 +58,8 @@ import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.Text
+import com.example.androidpracapp.ui.viewModel.Address
 import com.example.androidpracapp.ui.viewModel.CheckoutViewModel
-import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun CheckoutScreen(
@@ -70,19 +75,26 @@ fun CheckoutScreen(
     val delivery by viewModel.delivery.collectAsState()
     val total by viewModel.total.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val selectedLocation by viewModel.selectedLocation.collectAsState()
+
+    val context = LocalContext.current
 
     var editingPhone by remember { mutableStateOf(false) }
     var editingEmail by remember { mutableStateOf(false) }
     var editingAddress by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
-    var showMapDialog by remember { mutableStateOf(false) }
+    var showAddressDialog by remember { mutableStateOf(false) }
 
     var tempPhone by remember { mutableStateOf(contactInfo.phone) }
     var tempEmail by remember { mutableStateOf(contactInfo.email) }
     var tempAddress by remember { mutableStateOf(address) }
 
-    val context = LocalContext.current
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showAddressDialog = true
+        }
+    }
 
     LaunchedEffect(contactInfo) {
         tempPhone = contactInfo.phone
@@ -118,15 +130,15 @@ fun CheckoutScreen(
         )
     }
 
-    if (showMapDialog) {
-        MapSelectionDialog(
-            currentLocation = selectedLocation,
-            onLocationSelected = { location ->
-                viewModel.updateLocation(location)
-                showMapDialog = false
+    if (showAddressDialog) {
+        AddressDialog(
+            currentAddress = tempAddress,
+            onAddressSelected = { newAddress ->
+                viewModel.updateAddress(newAddress)
+                showAddressDialog = false
             },
             onDismiss = {
-                showMapDialog = false
+                showAddressDialog = false
             }
         )
     }
@@ -282,7 +294,17 @@ fun CheckoutScreen(
 
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(160.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable { showMapDialog = true },
+                        modifier = Modifier.fillMaxWidth().height(160.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable {
+                                val permission = Manifest.permission.ACCESS_FINE_LOCATION
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        permission) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    showAddressDialog = true
+                                } else {
+                                    locationPermissionLauncher.launch(permission)
+                                }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -309,34 +331,92 @@ fun CheckoutScreen(
 
                 item {
                     if (editingAddress) {
-                        OutlinedTextField(
-                            value = tempAddress,
-                            onValueChange = { tempAddress = it },
-                            label = { Text(stringResource(R.string.address), color = Hint) },
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Accent,
-                                unfocusedBorderColor = Block,
-                                cursorColor = Accent,
-                                focusedTextColor = Text,
-                                unfocusedTextColor = Text
-                            ),
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        viewModel.updateAddress(tempAddress)
-                                        editingAddress = false
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.edit_mark),
-                                        contentDescription = null,
-                                        tint = Accent,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        )
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = tempAddress.country,
+                                onValueChange = { tempAddress = tempAddress.copy(country = it) },
+                                label = { Text(stringResource(R.string.country), color = Hint) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Accent,
+                                    unfocusedBorderColor = Block,
+                                    cursorColor = Accent,
+                                    focusedTextColor = Text,
+                                    unfocusedTextColor = Text
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = tempAddress.city,
+                                onValueChange = { tempAddress = tempAddress.copy(city = it) },
+                                label = { Text(stringResource(R.string.city), color = Hint) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Accent,
+                                    unfocusedBorderColor = Block,
+                                    cursorColor = Accent,
+                                    focusedTextColor = Text,
+                                    unfocusedTextColor = Text
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = tempAddress.street,
+                                onValueChange = { tempAddress = tempAddress.copy(street = it) },
+                                label = { Text(stringResource(R.string.street), color = Hint) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Accent,
+                                    unfocusedBorderColor = Block,
+                                    cursorColor = Accent,
+                                    focusedTextColor = Text,
+                                    unfocusedTextColor = Text
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = tempAddress.house,
+                                onValueChange = { tempAddress = tempAddress.copy(house = it) },
+                                label = { Text(stringResource(R.string.home1), color = Hint) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Accent,
+                                    unfocusedBorderColor = Block,
+                                    cursorColor = Accent,
+                                    focusedTextColor = Text,
+                                    unfocusedTextColor = Text
+                                )
+                            )
+
+                            OutlinedTextField(
+                                value = tempAddress.apartment,
+                                onValueChange = { tempAddress = tempAddress.copy(apartment = it) },
+                                label = { Text(stringResource(R.string.home2), color = Hint) },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = Accent,
+                                    unfocusedBorderColor = Block,
+                                    cursorColor = Accent,
+                                    focusedTextColor = Text,
+                                    unfocusedTextColor = Text
+                                )
+                            )
+
+                            PrimaryButton(
+                                text = stringResource(R.string.done),
+                                onClick = {
+                                    viewModel.updateAddress(tempAddress)
+                                    editingAddress = false
+                                },
+                                height = 40.dp,
+                                backgroundColor = Accent,
+                                textColor = Block,
+                                style = AppTypography.labelMedium
+                            )
+                        }
                     } else {
                         Row(
                             modifier = Modifier.fillMaxWidth().background(Block, RoundedCornerShape(8.dp)).padding(12.dp),
@@ -350,7 +430,7 @@ fun CheckoutScreen(
                                     color = Hint
                                 )
                                 Text(
-                                    text = address,
+                                    text = address.toDisplayString().ifEmpty { stringResource(R.string.home3) },
                                     style = AppTypography.bodySmall,
                                     color = Text,
                                     modifier = Modifier.padding(top = 4.dp)
@@ -363,8 +443,8 @@ fun CheckoutScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.edit),
                                     contentDescription = null,
-                                    tint = Accent,
-                                    modifier = Modifier.size(16.dp)
+                                    tint = Hint,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
@@ -416,7 +496,7 @@ fun ContactField(
                 focusedTextColor = Text,
                 unfocusedTextColor = Text
             ),
-            keyboardOptions = if (label == "Email") {
+            keyboardOptions = if (label.contains("Email", ignoreCase = true)) {
                 KeyboardOptions(keyboardType = KeyboardType.Email)
             } else {
                 KeyboardOptions(keyboardType = KeyboardType.Phone)
@@ -445,7 +525,7 @@ fun ContactField(
                     color = Hint
                 )
                 Text(
-                    text = value,
+                    text = value.ifEmpty { stringResource(R.string.home3) },
                     style = AppTypography.bodySmall,
                     color = Text,
                     modifier = Modifier.padding(top = 4.dp)
@@ -458,8 +538,8 @@ fun ContactField(
                 Icon(
                     painter = painterResource(id = R.drawable.edit),
                     contentDescription = null,
-                    tint = Accent,
-                    modifier = Modifier.size(16.dp)
+                    tint = Hint,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -479,22 +559,24 @@ fun PaymentMethodSelector(
     ) {
         methods.forEach { method ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        if (selectedMethod == method) Accent else Block,
+                modifier = Modifier.fillMaxWidth().background(
+                        if (selectedMethod == method) {
+                            Accent
+                        } else {
+                            Block
+                        },
                         RoundedCornerShape(8.dp)
-                    )
-                    .clickable { onMethodSelected(method) }
-                    .padding(12.dp),
+                    ).clickable { onMethodSelected(method) }.padding(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .background(
-                            if (selectedMethod == method) Block else Background,
+                    modifier = Modifier.size(20.dp).background(
+                            if (selectedMethod == method) {
+                                Block
+                            } else {
+                                Background
+                            },
                             CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -511,7 +593,11 @@ fun PaymentMethodSelector(
                 Text(
                     text = method,
                     style = AppTypography.bodySmall,
-                    color = if (selectedMethod == method) Block else Text
+                    color = if (selectedMethod == method) {
+                        Block
+                    } else {
+                        Text
+                    }
                 )
             }
         }
@@ -519,21 +605,22 @@ fun PaymentMethodSelector(
 }
 
 @Composable
-fun MapSelectionDialog(
-    currentLocation: LatLng?,
-    onLocationSelected: (LatLng) -> Unit,
+fun AddressDialog(
+    currentAddress: Address,
+    onAddressSelected: (Address) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var selectedLocation by remember { mutableStateOf(currentLocation ?: LatLng(55.7558, 37.6173)) }
+    var selectedAddress by remember { mutableStateOf(currentAddress) }
 
     MessageDialog(
-        title = "Выбрать адрес",
-        description = "Нажмите на карту для выбора координат",
+        title = "Введите адрес",
+        description = "Укажите страну, город, улицу, дом и квартиру",
         onOk = {
-            onLocationSelected(selectedLocation)
+            onAddressSelected(selectedAddress)
         },
         onCancel = onDismiss,
         okButtonText = "Готово",
-        cancelButtonText = "Отмена"
+        cancelButtonText = "Отмена",
+        showButtons = false
     )
 }

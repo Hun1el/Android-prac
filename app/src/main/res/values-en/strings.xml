@@ -81,4 +81,10 @@
     <string name="in_cart">In Cart</string>
     <string name="no_cart1">"The Cart Is Empty "</string>
     <string name="no_cart2">Add Products Rrom The Catalog</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="street">Street</string>
+    <string name="home1">House</string>
+    <string name="home2">Apartment</string>
+    <string name="home3">Not specified</string>
 </resources>

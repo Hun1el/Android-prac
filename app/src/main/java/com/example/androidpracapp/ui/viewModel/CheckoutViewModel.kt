@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,6 +14,24 @@ data class ContactInfo(
     val phone: String = "",
     val email: String = ""
 )
+
+data class Address(
+    val country: String = "",
+    val city: String = "",
+    val street: String = "",
+    val house: String = "",
+    val apartment: String = ""
+) {
+    fun toDisplayString(): String {
+        return listOfNotNull(
+            country.takeIf { it.isNotEmpty() },
+            city.takeIf { it.isNotEmpty() },
+            street.takeIf { it.isNotEmpty() },
+            house.takeIf { it.isNotEmpty() },
+            apartment.takeIf { it.isNotEmpty() }
+        ).joinToString(", ")
+    }
+}
 
 data class CreateOrderRequest(
     val user_id: String,
@@ -31,7 +48,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private val _contactInfo = MutableStateFlow(ContactInfo())
     val contactInfo = _contactInfo.asStateFlow()
 
-    private val _address = MutableStateFlow("")
+    private val _address = MutableStateFlow(Address())
     val address = _address.asStateFlow()
 
     private val _paymentMethod = MutableStateFlow("Добавить")
@@ -48,9 +65,6 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
-
-    private val _selectedLocation = MutableStateFlow<LatLng?>(null)
-    val selectedLocation = _selectedLocation.asStateFlow()
 
     init {
         loadUserData()
@@ -69,10 +83,22 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
         val phone = sharedPrefs.getString("userPhone", "") ?: ""
         val email = sharedPrefs.getString("userEmail", "") ?: ""
-        val address = sharedPrefs.getString("userAddress", "") ?: ""
 
         _contactInfo.value = ContactInfo(phone = phone, email = email)
-        _address.value = address
+
+        val country = sharedPrefs.getString("userCountry", "") ?: ""
+        val city = sharedPrefs.getString("userCity", "") ?: ""
+        val street = sharedPrefs.getString("userStreet", "") ?: ""
+        val house = sharedPrefs.getString("userHouse", "") ?: ""
+        val apartment = sharedPrefs.getString("userApartment", "") ?: ""
+
+        _address.value = Address(
+            country = country,
+            city = city,
+            street = street,
+            house = house,
+            apartment = apartment
+        )
     }
 
     private fun calculateCart() {
@@ -85,19 +111,13 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         saveUserData()
     }
 
-    fun updateAddress(newAddress: String) {
-        _address.value = newAddress
+    fun updateAddress(address: Address) {
+        _address.value = address
         saveUserData()
     }
 
     fun updatePaymentMethod(method: String) {
         _paymentMethod.value = method
-    }
-
-    fun updateLocation(location: LatLng) {
-        _selectedLocation.value = location
-        _address.value = "Координаты: ${location.latitude}, ${location.longitude}"
-        saveUserData()
     }
 
     private fun saveUserData() {
@@ -107,7 +127,11 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         sharedPrefs.edit().apply {
             putString("userPhone", _contactInfo.value.phone)
             putString("userEmail", _contactInfo.value.email)
-            putString("userAddress", _address.value)
+            putString("userCountry", _address.value.country)
+            putString("userCity", _address.value.city)
+            putString("userStreet", _address.value.street)
+            putString("userHouse", _address.value.house)
+            putString("userApartment", _address.value.apartment)
             apply()
         }
     }
@@ -115,7 +139,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     fun placeOrder(
         phone: String,
         email: String,
-        address: String,
+        address: Address,
         paymentMethod: String,
         total: Double,
         onSuccess: () -> Unit
@@ -128,7 +152,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                 val orderRequest = CreateOrderRequest(
                     user_id = userId,
                     total_amount = total,
-                    delivery_address = address,
+                    delivery_address = address.toDisplayString(),
                     phone = phone,
                     email = email,
                     payment_method = paymentMethod,
