@@ -38,7 +38,7 @@
     <string name="stock">Акции</string>
     <string name="favorite">Избранное</string>
     <string name="bucket">Корзина</string>
-    <string name="cart">Товара</string>
+    <string name="cart">товара</string>
     <string name="sub">Сумма</string>
     <string name="delivery">Доставка</string>
     <string name="total">Итого</string>
@@ -47,7 +47,7 @@
     <string name="address">Адрес</string>
     <string name="phone_number">Телефон</string>
     <string name="payment_method">Способ оплаты</string>
-    <string name="min_ago">Мин назад</string>
+    <string name="min_ago">мин назад</string>
     <string name="open">Открыть</string>
     <string name="view_map">Посмотреть на карте</string>
     <string name="recent">Недавний</string>
@@ -77,4 +77,15 @@
     <string name="fio">Имя Фамилия</string>
     <string name="fav_empty">Список избранного пустого</string>
     <string name="desc_less">Свернуть</string>
+    <string name="in_cart">В корзине</string>
+    <string name="no_cart1">Корзина пуста</string>
+    <string name="no_cart2">Добавьте товары из каталога</string>
+    <string name="country">Страна</string>
+    <string name="city">Город</string>
+    <string name="street">Улица</string>
+    <string name="home1">Дом</string>
+    <string name="home2">Квартира</string>
+    <string name="home3">Не указан</string>
+    <string name="card_number">Номер карты</string>
+    <string name="order1">Заказ</string>
 </resources>

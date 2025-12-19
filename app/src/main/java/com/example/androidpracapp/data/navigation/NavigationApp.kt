@@ -3,6 +3,7 @@ package com.example.androidpracapp.data.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,25 +14,17 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import com.example.androidpracapp.R
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
-import com.example.androidpracapp.ui.screen.CatalogScreen
-import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
-import com.example.androidpracapp.ui.screen.FavoriteScreen
-import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
-import com.example.androidpracapp.ui.screen.HomeScreen
-import com.example.androidpracapp.ui.screen.OnboardPagerScreen
-import com.example.androidpracapp.ui.screen.ProfileScreen
-import com.example.androidpracapp.ui.screen.RegisterAccountScreen
-import com.example.androidpracapp.ui.screen.SignInScreen
-import com.example.androidpracapp.ui.screen.SplashScreen
-import com.example.androidpracapp.ui.screen.VerificationScreen
+import com.example.androidpracapp.ui.screen.*
+import com.example.androidpracapp.ui.screens.OrdersScreen // Импорт твоего нового экрана
 import com.example.androidpracapp.ui.screens.ProductDetailScreen
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
+import com.example.androidpracapp.ui.viewModel.OrdersViewModel // Импорт ViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -57,6 +50,10 @@ fun NavigationApp(navController: NavHostController) {
             launchSingleTop = true
             restoreState = true
         }
+    }
+
+    val onFabCartClick: () -> Unit = {
+        navController.navigate(NavRoute.MyCart.route)
     }
 
     NavHost(
@@ -141,6 +138,81 @@ fun NavigationApp(navController: NavHostController) {
                 onCategoryClick = { navController.navigate(NavRoute.Catalog.route) },
                 onProductClick = { product ->
                     navController.navigate("${NavRoute.ProductDetails.route}/${product.id}")
+                },
+                onFabClick = onFabCartClick
+            )
+        }
+
+        composable(NavRoute.Favorite.route) {
+            val favoriteViewModel: FavoriteViewModel = viewModel()
+
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 1,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = onFabCartClick,
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    FavoriteScreen(
+                        viewModel = favoriteViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        composable(NavRoute.Orders.route) {
+            val ordersViewModel: OrdersViewModel = viewModel()
+
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 2,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = onFabCartClick,
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    OrdersScreen(
+                        viewModel = ordersViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        composable(NavRoute.Profile.route) {
+            ProfileScreen(
+                selectedTabIndex = 3,
+                onTabSelected = { index -> navigateToTab(index) },
+                onFabClick = onFabCartClick
+            )
+        }
+
+        composable(NavRoute.Catalog.route) {
+            CatalogScreen(
+                viewModel = catalogViewModel,
+                onBackClick = { navController.popBackStack() },
+                onProductClick = { product ->
+                    navController.navigate("${NavRoute.ProductDetails.route}/${product.id}")
                 }
             )
         }
@@ -156,76 +228,22 @@ fun NavigationApp(navController: NavHostController) {
             )
         }
 
-        composable(NavRoute.Catalog.route) {
-            CatalogScreen(
-                viewModel = catalogViewModel,
-                onBackClick = { navController.popBackStack() }
+        composable(NavRoute.MyCart.route) {
+            CartScreen(
+                onBackClick = { navController.popBackStack() },
+                onCheckoutClick = { navController.navigate(NavRoute.Checkout.route) }
             )
         }
 
-        composable(NavRoute.Favorite.route) {
-            val favoriteViewModel: FavoriteViewModel = viewModel()
-
-            androidx.compose.material3.Scaffold(
-                bottomBar = {
-                    BottomNavigation(
-                        items = listOf(
-                            BottomNavItem(R.drawable.home, "Home"),
-                            BottomNavItem(R.drawable.favorite, "Favorite"),
-                            BottomNavItem(R.drawable.orders, "Orders"),
-                            BottomNavItem(R.drawable.profile, "Profile"),
-                        ),
-                        selectedTabIndex = 1,
-                        onTabSelected = { index -> navigateToTab(index) },
-                        onFabClick = {
-                            navController.navigate(NavRoute.Orders.route)
-                        },
-                        fabIconRes = R.drawable.shoping
-                    )
+        composable(NavRoute.Checkout.route) {
+            CheckoutScreen(
+                onBackClick = { navController.popBackStack() },
+                onOrderSuccess = {
+                    navController.navigate(NavRoute.Home.route) {
+                        popUpTo(NavRoute.MyCart.route) { inclusive = true }
+                    }
                 }
-            ) { padding ->
-                Box(modifier = Modifier.padding(padding)) {
-                    FavoriteScreen(
-                        viewModel = favoriteViewModel,
-                        onBackClick = { navController.popBackStack() }
-                    )
-                }
-            }
-        }
-
-        composable(NavRoute.Orders.route) {
-            PlaceholderScreen(stringResource(R.string.order), 2) { index -> navigateToTab(index) }
-        }
-
-        composable(NavRoute.Profile.route) {
-            ProfileScreen(
-                selectedTabIndex = 3,
-                onTabSelected = { index -> navigateToTab(index) }
             )
-        }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(title: String, index: Int, onTabSelected: (Int) -> Unit) {
-    androidx.compose.material3.Scaffold(
-        bottomBar = {
-            BottomNavigation(
-                items = listOf(
-                    BottomNavItem(R.drawable.home, "Home"),
-                    BottomNavItem(R.drawable.favorite, "Favorite"),
-                    BottomNavItem(R.drawable.orders, "Orders"),
-                    BottomNavItem(R.drawable.profile, "Profile"),
-                ),
-                selectedTabIndex = index,
-                onTabSelected = onTabSelected,
-                onFabClick = { },
-                fabIconRes = R.drawable.shoping
-            )
-        }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-            Text(text = title)
         }
     }
 }

@@ -67,9 +67,6 @@ fun ProductCard(
     data: ProductCardData,
     modifier: Modifier = Modifier
 ) {
-    var isFavorite by remember(data.isFavorite) { mutableStateOf(data.isFavorite) }
-    var isInCart by remember(data.isInCart) { mutableStateOf(data.isInCart) }
-
     Box(
         modifier = modifier.size(180.dp).shadow(
             elevation = 4.dp,
@@ -103,14 +100,13 @@ fun ProductCard(
                                 color = Background,
                                 shape = CircleShape
                             ).clickable {
-                                isFavorite = !isFavorite
                                 data.onFavoriteClick()
                             },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(
-                                id = if (isFavorite) {
+                                id = if (data.isFavorite) {
                                     R.drawable.favorite_fill
                                 } else {
                                     R.drawable.favorite
@@ -118,7 +114,7 @@ fun ProductCard(
                             ),
                             contentDescription = "Favorite",
                             modifier = Modifier.size(14.dp),
-                            tint = if (isFavorite) {
+                            tint = if (data.isFavorite) {
                                 Red
                             } else {
                                 Text
@@ -159,28 +155,27 @@ fun ProductCard(
 
                 Box(
                     modifier = Modifier.fillMaxHeight().size(width = 40.dp, height = 40.dp).background(
-                        color = Accent,
+                        color = if (data.isInCart) com.example.androidpracapp.ui.theme.Disable else Accent,
                         shape = RoundedCornerShape(
                             topStart = 12.dp,
                             bottomStart = 0.dp,
                             bottomEnd = 12.dp,
                             topEnd = 0.dp
                         )
-                    ).clickable {
-                        isInCart = !isInCart
+                    ).clickable(enabled = !data.isInCart) {
                         data.onAddClick()
                     },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(
-                            id = if (isInCart) {
+                            id = if (data.isInCart) {
                                 R.drawable.cart
                             } else {
                                 R.drawable.add
                             }
                         ),
-                        contentDescription = if (isInCart) {
+                        contentDescription = if (data.isInCart) {
                             "In Cart"
                         } else {
                             "Add"

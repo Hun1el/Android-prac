@@ -48,7 +48,7 @@
     <string name="address">Address</string>
     <string name="phone_number">Phone number</string>
     <string name="payment_method">Payment Method</string>
-    <string name="min_ago">Min ago</string>
+    <string name="min_ago">min ago</string>
     <string name="open">OPEN</string>
     <string name="view_map">View Map</string>
     <string name="recent">Recent</string>
@@ -78,4 +78,15 @@
     <string name="fio">No Name</string>
     <string name="fav_empty">The favorites list is empty</string>
     <string name="desc_less">Collapse</string>
+    <string name="in_cart">In Cart</string>
+    <string name="no_cart1">"The Cart Is Empty "</string>
+    <string name="no_cart2">Add Products Rrom The Catalog</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="street">Street</string>
+    <string name="home1">House</string>
+    <string name="home2">Apartment</string>
+    <string name="home3">Not specified</string>
+    <string name="card_number">Card number</string>
+    <string name="order1">Order</string>
 </resources>

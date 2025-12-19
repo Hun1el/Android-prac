@@ -78,6 +78,7 @@ fun HomeScreen(
     favoriteViewModel: FavoriteViewModel = viewModel(),
     onProductClick: (Product) -> Unit = {},
     selectedTabIndex: Int = 0,
+    onFabClick: () -> Unit = {},
     onCategoryClick: () -> Unit = {},
     onTabSelected: (Int) -> Unit = {}
 ) {
@@ -95,8 +96,11 @@ fun HomeScreen(
         viewModel.resetCategory()
     }
 
-    LaunchedEffect(Unit) {
-        favoriteViewModel.loadFavorites()
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex == 0) {
+            viewModel.refreshCartStatus()
+            favoriteViewModel.loadFavorites()
+        }
     }
 
     Scaffold(
@@ -110,7 +114,7 @@ fun HomeScreen(
                 ),
                 selectedTabIndex = selectedTabIndex,
                 onTabSelected = onTabSelected,
-                onFabClick = {  },
+                onFabClick = onFabClick,
                 fabIconRes = R.drawable.shoping,
                 modifier = Modifier.background(Background)
             )
@@ -280,28 +284,36 @@ fun HomeScreen(
 
                     val popularProducts = products.filter { it.isBestSeller == true }
 
-                    items(popularProducts.size) { index ->
+                    items(popularProducts.size, key = { popularProducts[it].id }) { index ->
                         val product = popularProducts[index]
                         val isFavorite = favoriteIds.contains(product.id)
 
-                        ProductCard(
-                            data = ProductCardData(
-                                imageRes = R.drawable.air_max,
-                                label = "BEST SELLER",
-                                title = product.title,
-                                price = "₽${product.cost.toInt()}",
-                                isFavorite = isFavorite,
-                                isInCart = false,
-                                onFavoriteClick = {
-                                    if (isFavorite) {
-                                        favoriteViewModel.removeFromFavorites(product)
-                                    } else {
-                                        favoriteViewModel.addToFavorites(product)
-                                    }
-                                }
-                            ),
+                        Box(
                             modifier = Modifier.clickable { onProductClick(product) }
-                        )
+                        ) {
+                            ProductCard(
+                                data = ProductCardData(
+                                    imageRes = R.drawable.air_max,
+                                    label = "BEST SELLER",
+                                    title = product.title,
+                                    price = "₽${product.cost.toInt()}",
+                                    isFavorite = isFavorite,
+                                    isInCart = product.isInCart,
+                                    onFavoriteClick = {
+                                        if (isFavorite) {
+                                            favoriteViewModel.removeFromFavorites(product)
+                                        } else {
+                                            favoriteViewModel.addToFavorites(product)
+                                        }
+                                    },
+                                    onAddClick = {
+                                        if (!product.isInCart) {
+                                            viewModel.addToCart(product)
+                                        }
+                                    }
+                                )
+                            )
+                        }
                     }
 
                     item(span = { GridItemSpan(2) }) {

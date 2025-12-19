@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ import com.example.androidpracapp.ui.theme.Block
 import com.example.androidpracapp.ui.theme.Hint
 import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.Text
+import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
 
 @Composable
@@ -49,11 +51,21 @@ fun FavoriteScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoriteViewModel = viewModel(),
     onBackClick: () -> Unit = {},
+    catalogViewModel: CatalogViewModel = viewModel(),
     selectedTabIndex: Int = 1,
-    onTabSelected: (Int) -> Unit = {}
+    onTabSelected: (Int) -> Unit = {},
+    onFabClick: () -> Unit = {}
 ) {
     val favorites by viewModel.favorites.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex == 1) {
+            catalogViewModel.loadData()  // ← загрузи товары
+            catalogViewModel.loadCartProductIds()  // ← затем загрузи статус корзины
+            viewModel.loadFavorites()
+        }
+    }
 
     FavoriteScreenContent(
         favorites = favorites,
@@ -64,6 +76,8 @@ fun FavoriteScreen(
         },
         selectedTabIndex = selectedTabIndex,
         onTabSelected = onTabSelected,
+        viewModel = viewModel,
+        catalogViewModel = catalogViewModel,
         modifier = modifier
     )
 }
@@ -76,6 +90,8 @@ fun FavoriteScreenContent(
     onFavoriteClick: (Product) -> Unit,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,
+    viewModel: FavoriteViewModel,
+    catalogViewModel: CatalogViewModel,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -147,8 +163,13 @@ fun FavoriteScreenContent(
                                 title = product.title,
                                 price = "₽${product.cost.toInt()}",
                                 isFavorite = true,
-                                isInCart = false,
-                                onFavoriteClick = { onFavoriteClick(product) }
+                                isInCart = product.isInCart,  // ← используй это!
+                                onFavoriteClick = { onFavoriteClick(product) },
+                                onAddClick = {
+                                    if (!product.isInCart) {
+                                        viewModel.addToCart(product)
+                                    }
+                                }
                             )
                         )
                     }

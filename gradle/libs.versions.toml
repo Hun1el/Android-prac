@@ -9,6 +9,8 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.1"
 composeBom = "2024.09.00"
+mapsCompose = "4.1.1"
+playServicesLocation = "21.1.0"
 uiTextGoogleFonts = "1.10.0"
 runtime = "1.10.0"
 retrofit = "3.0.0"
@@ -17,6 +19,11 @@ navigationComposeVersion = "2.9.5"
 foundation = "1.10.0"
 lifecycleViewmodelKtx = "2.10.0"
 litertSupportApi = "1.4.1"
+playServicesMaps = "19.2.0"
+playServicesLocationVersion = "21.3.0"
+billing = "1.1.0"
+ui = "1.10.0"
+playServicesCastFramework = "22.2.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -36,6 +43,8 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "livedata" }
@@ -43,6 +52,11 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 litert-support-api = { group = "com.google.ai.edge.litert", name = "litert-support-api", version.ref = "litertSupportApi" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+gms-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocationVersion" }
+billing = { group = "com.google.androidbrowserhelper", name = "billing", version.ref = "billing" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+play-services-cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServicesCastFramework" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -9,6 +9,8 @@ sealed class NavRoute(val route: String) {
     object VerifyOTP : NavRoute("verify_otp")
     object CreateNewPassword : NavRoute("create_new_password")
     object ProductDetails : NavRoute("product_details")
+    object MyCart : NavRoute("my_cart")
+    object Checkout : NavRoute("checkout")
 
     object Home : NavRoute("home")
     object Favorite : NavRoute("favorite")

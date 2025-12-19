@@ -50,21 +50,28 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
                 if (userId != null) {
                     Log.d("Favorite", "Запрос избранного для userId: $userId")
 
-                    val response = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
+                    val favResponse = RetrofitInstance.favoriteManagementService.getFavorites(userId = "eq.$userId")
+                    val cartResponse = RetrofitInstance.cartManagementService.getCartItems(userId = "eq.$userId")
 
-                    Log.d("Favorite", "Код ответа: ${response.code()}")
+                    Log.d("Favorite", "Код ответа: ${favResponse.code()}")
 
-                    if (response.isSuccessful && response.body() != null) {
-                        val body = response.body()!!
-                        Log.d("Favorite", "Тело: ${body.size}")
+                    if (favResponse.isSuccessful && favResponse.body() != null && cartResponse.isSuccessful) {
+                        val favBody = favResponse.body()!!
+                        val cartBody = cartResponse.body() ?: emptyList()
 
-                        val mappedProducts = body.mapNotNull { it.products }
+                        val cartProductIds = cartBody.map { it.product_id }.toSet()
+
+                        Log.d("Favorite", "Тело: ${favBody.size}")
+
+                        val mappedProducts = favBody.mapNotNull { it.products }.map { product ->
+                            product.copy(isInCart = cartProductIds.contains(product.id))
+                        }
                         Log.d("Favorite", "${mappedProducts.size}")
 
                         _favorites.value = mappedProducts
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e("Favorite", "Ошибка сервера: ${response.code()} Body: $errorBody")
+                        val errorBody = favResponse.errorBody()?.string()
+                        Log.e("Favorite", "Ошибка сервера: ${favResponse.code()} Body: $errorBody")
                     }
                 } else {
                     Log.e("Favorite", "UserId null")
@@ -124,6 +131,35 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 loadFavorites()
                 Log.e("Favorite", "Ошибка удаления: ${e.message}")
+            }
+        }
+    }
+
+    fun addToCart(product: Product) {
+        viewModelScope.launch {
+            try {
+                val userId = getUserIdFromPrefs() ?: return@launch
+
+                val entry = com.example.androidpracapp.data.services.CreateCartEntryRequest(
+                    user_id = userId,
+                    product_id = product.id,
+                    count = 1
+                )
+
+                val response = RetrofitInstance.cartManagementService.addToCart(entry)
+
+                if (response.isSuccessful) {
+                    val currentList = _favorites.value.toMutableList()
+                    val index = currentList.indexOfFirst { it.id == product.id }
+                    if (index != -1) {
+                        currentList[index] = currentList[index].copy(isInCart = true)
+                        _favorites.value = currentList
+                    }
+                } else {
+                    Log.e("Favorite", "Ошибка добавления в корзину: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Favorite", "Ошибка добавления в корзину: ${e.message}")
             }
         }
     }
