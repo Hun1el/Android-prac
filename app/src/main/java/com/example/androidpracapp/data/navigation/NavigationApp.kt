@@ -21,6 +21,7 @@ import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
 import com.example.androidpracapp.ui.screen.CartScreen
 import com.example.androidpracapp.ui.screen.CatalogScreen
+import com.example.androidpracapp.ui.screen.CheckoutScreen
 import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
 import com.example.androidpracapp.ui.screen.FavoriteScreen
 import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
@@ -187,7 +188,18 @@ fun NavigationApp(navController: NavHostController) {
         composable(NavRoute.MyCart.route) {
             CartScreen(
                 onBackClick = { navController.popBackStack() },
-                onCheckoutClick = {  }
+                onCheckoutClick = { navController.navigate(NavRoute.Checkout.route) }
+            )
+        }
+
+        composable(NavRoute.Checkout.route) {
+            CheckoutScreen(
+                onBackClick = { navController.popBackStack() },
+                onOrderSuccess = {
+                    navController.navigate(NavRoute.Home.route) {
+                        popUpTo(NavRoute.MyCart.route) { inclusive = true }
+                    }
+                }
             )
         }
 

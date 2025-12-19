@@ -66,7 +66,7 @@ fun MessageDialog(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                color = Color.White
+                color = Block
             ) {
                 Column(
                     modifier = Modifier.padding(32.dp).fillMaxWidth(),
@@ -84,7 +84,7 @@ fun MessageDialog(
                                 painter = icon,
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
-                                tint = Color.White
+                                tint = Block
                             )
                         }
 
@@ -118,7 +118,7 @@ fun MessageDialog(
                                     modifier = Modifier.weight(1f).height(48.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = cancelButtonColor,
-                                        contentColor = Text
+                                        contentColor = Block
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {

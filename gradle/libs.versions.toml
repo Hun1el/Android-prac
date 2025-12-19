@@ -17,6 +17,7 @@ navigationComposeVersion = "2.9.5"
 foundation = "1.10.0"
 lifecycleViewmodelKtx = "2.10.0"
 litertSupportApi = "1.4.1"
+playServicesMaps = "19.2.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -43,6 +44,7 @@ navigation-compose = { group = "androidx.navigation", name = "navigation-compose
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 litert-support-api = { group = "com.google.ai.edge.litert", name = "litert-support-api", version.ref = "litertSupportApi" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
