@@ -47,7 +47,7 @@
     <string name="address">Адрес</string>
     <string name="phone_number">Телефон</string>
     <string name="payment_method">Способ оплаты</string>
-    <string name="min_ago">Мин назад</string>
+    <string name="min_ago">мин назад</string>
     <string name="open">Открыть</string>
     <string name="view_map">Посмотреть на карте</string>
     <string name="recent">Недавний</string>

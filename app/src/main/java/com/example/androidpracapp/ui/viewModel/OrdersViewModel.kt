@@ -3,7 +3,6 @@ package com.example.androidpracapp.ui.viewModel
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.R
@@ -47,67 +46,41 @@ class OrdersViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun loadOrders() {
-        Log.d("Orders", "loadOrders: Начинаем загрузку...")
         val context = getApplication<Application>().applicationContext
-
         val prefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
         val userId = prefs.getString("userId", null)
 
-        Log.d("Orders", "loadOrders: Получен userId из SharedPreferences: '$userId'")
-
         if (userId == null) {
-            val errorMsg = "Пользователь не найден (не залогинен)"
-            Log.e("Orders", "loadOrders Error: $errorMsg")
-            _uiState.update { it.copy(error = errorMsg) }
+            _uiState.update { it.copy(error = "Пользователь не найден") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            Log.d("Orders", "loadOrders: Запрос к репозиторию для userId=$userId")
-
             val result = repository.getOrdersHistory(userId)
 
             if (result.isSuccess) {
                 val orders = result.getOrDefault(emptyList())
-                Log.d("Orders", "loadOrders Success: Получено ${orders.size} заказов")
-
-                if (orders.isNotEmpty()) {
-                    Log.d("Orders", "First order raw: ${orders[0]}")
-                }
-
                 val sections = mapOrdersToSections(orders)
-                Log.d("Orders", "loadOrders: Данные сгруппированы в ${sections.size} секций")
-
                 _uiState.update { it.copy(isLoading = false, sections = sections) }
             } else {
-                val exception = result.exceptionOrNull()
-                val errorMsg = exception?.message ?: "Неизвестная ошибка"
-                Log.e("Orders", "loadOrders Failure: $errorMsg", exception)
-
-                _uiState.update {
-                    it.copy(isLoading = false, error = errorMsg)
-                }
+                val errorMsg = result.exceptionOrNull()?.message ?: "Ошибка загрузки"
+                _uiState.update { it.copy(isLoading = false, error = errorMsg) }
             }
         }
     }
 
     fun repeatOrder(orderId: Long) {
-        Log.d("Orders", "repeatOrder: Clicked for order $orderId")
-        viewModelScope.launch {
-
-        }
     }
 
     fun cancelOrder(orderId: Long) {
-        Log.d("Orders", "cancelOrder: Clicked for order $orderId")
         viewModelScope.launch {
-            Log.d("Orders", "cancelOrder: Refreshing list...")
             loadOrders()
         }
     }
 
     private fun mapOrdersToSections(orders: List<OrderWithItems>): Map<String, List<OrderUiItem>> {
+        val context = getApplication<Application>()
         val now = OffsetDateTime.now()
         val zone = ZoneId.systemDefault()
         val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ru"))
@@ -121,20 +94,31 @@ class OrdersViewModel(application: Application) : AndroidViewModel(application) 
                 val minutesDiff = ChronoUnit.MINUTES.between(created, now)
                 val isToday = created.toLocalDate() == now.toLocalDate()
 
+                val minAgoString = try {
+                    context.getString(R.string.min_ago)
+                } catch (e: Exception) {
+                    "мин назад"
+                }
+
                 val timeText = if (isToday && minutesDiff < 60) {
-                    "$minutesDiff" + "" + R.string.min_ago
+                    "$minutesDiff $minAgoString"
                 } else {
                     created.format(timeFormatter)
                 }
 
                 val firstItem = order.items.firstOrNull()
-                if (firstItem == null) {
-                    Log.w("Orders", "Order ${order.id} has no items!")
+
+                val orderString = try {
+                    context.getString(R.string.order1)
+                } catch (e: Exception) {
+                    "Заказ"
                 }
+
+                val title = firstItem?.title ?: orderString
 
                 OrderUiItem(
                     id = order.id,
-                    title = firstItem?.title ?: (R.string.order1.toString() + "" + "№${order.id}"),
+                    title = title,
                     price = firstItem?.coast ?: 0.0,
                     delivery = (order.delivery_coast ?: 0L).toDouble(),
                     timeText = timeText,
@@ -142,7 +126,6 @@ class OrdersViewModel(application: Application) : AndroidViewModel(application) 
                     rawDate = created
                 )
             } catch (e: Exception) {
-                Log.e("Orders", "Error mapping order ${order.id}: ${e.message}")
                 null
             }
         }.sortedByDescending { it.rawDate }
@@ -150,8 +133,8 @@ class OrdersViewModel(application: Application) : AndroidViewModel(application) 
         return uiItems.groupBy { item ->
             val date = item.rawDate.toLocalDate()
             when {
-                date == now.toLocalDate() -> R.string.recent.toString()
-                date == now.minusDays(1).toLocalDate() -> R.string.yesterday.toString()
+                date == now.toLocalDate() -> try { context.getString(R.string.recent) } catch(e:Exception){ "Недавние" }
+                date == now.minusDays(1).toLocalDate() -> try { context.getString(R.string.yesterday) } catch(e:Exception){ "Вчера" }
                 else -> date.format(dateFormatter)
             }
         }

@@ -48,7 +48,7 @@
     <string name="address">Address</string>
     <string name="phone_number">Phone number</string>
     <string name="payment_method">Payment Method</string>
-    <string name="min_ago">Min ago</string>
+    <string name="min_ago">min ago</string>
     <string name="open">OPEN</string>
     <string name="view_map">View Map</string>
     <string name="recent">Recent</string>
