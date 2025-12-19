@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,10 +37,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.androidpracapp.R
+import com.example.androidpracapp.data.services.LocationService
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
@@ -60,6 +64,7 @@ import com.example.androidpracapp.ui.theme.Red
 import com.example.androidpracapp.ui.theme.Text
 import com.example.androidpracapp.ui.viewModel.Address
 import com.example.androidpracapp.ui.viewModel.CheckoutViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun CheckoutScreen(
@@ -77,12 +82,13 @@ fun CheckoutScreen(
     val isLoading by viewModel.isLoading.collectAsState()
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val locationService = remember { LocationService(context) }
 
     var editingPhone by remember { mutableStateOf(false) }
     var editingEmail by remember { mutableStateOf(false) }
     var editingAddress by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
-    var showAddressDialog by remember { mutableStateOf(false) }
 
     var tempPhone by remember { mutableStateOf(contactInfo.phone) }
     var tempEmail by remember { mutableStateOf(contactInfo.email) }
@@ -92,7 +98,19 @@ fun CheckoutScreen(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            showAddressDialog = true
+            scope.launch {
+                val coordinates = locationService.getCurrentLocation()
+                if (coordinates != null) {
+                    val newAddress = locationService.getAddressFromCoordinates(
+                        coordinates.first,
+                        coordinates.second
+                    )
+                    if (newAddress != null) {
+                        viewModel.updateAddress(newAddress.fullAddress)
+                        tempAddress = newAddress
+                    }
+                }
+            }
         }
     }
 
@@ -131,19 +149,6 @@ fun CheckoutScreen(
             cancelButtonText = "Отмена",
             okButtonColor = Accent,
             cancelButtonColor = Red
-        )
-    }
-
-    if (showAddressDialog) {
-        AddressDialog(
-            currentAddress = tempAddress,
-            onAddressSelected = { newAddress ->
-                viewModel.updateAddress(newAddress)
-                showAddressDialog = false
-            },
-            onDismiss = {
-                showAddressDialog = false
-            }
         )
     }
 
@@ -298,129 +303,68 @@ fun CheckoutScreen(
 
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(160.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable {
+                        modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable {
                                 val permission = Manifest.permission.ACCESS_FINE_LOCATION
-                                if (ContextCompat.checkSelfPermission(
-                                        context,
-                                        permission) == PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    showAddressDialog = true
+                                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                                    scope.launch {
+                                        val coordinates = locationService.getCurrentLocation()
+                                        if (coordinates != null) {
+                                            val newAddress = locationService.getAddressFromCoordinates(
+                                                coordinates.first,
+                                                coordinates.second
+                                            )
+                                            if (newAddress != null) {
+                                                viewModel.updateAddress(newAddress.fullAddress)
+                                                tempAddress = newAddress
+                                            }
+                                        }
+                                    }
                                 } else {
                                     locationPermissionLauncher.launch(permission)
                                 }
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.map),
-                                contentDescription = null,
-                                modifier = Modifier.size(48.dp)
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = stringResource(R.string.view_map),
-                                style = AppTypography.bodySmall,
-                                color = Accent
-                            )
-                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.map),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier.matchParentSize()
+                        )
                     }
                 }
 
+
                 item {
                     if (editingAddress) {
-                        Column(
+                        OutlinedTextField(
+                            value = tempAddress.fullAddress,
+                            onValueChange = { tempAddress = Address(fullAddress = it) },
+                            label = { Text(stringResource(R.string.address), color = Hint) },
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            OutlinedTextField(
-                                value = tempAddress.country,
-                                onValueChange = { tempAddress = tempAddress.copy(country = it) },
-                                label = { Text(stringResource(R.string.country), color = Hint) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Accent,
-                                    unfocusedBorderColor = Block,
-                                    cursorColor = Accent,
-                                    focusedTextColor = Text,
-                                    unfocusedTextColor = Text
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = tempAddress.city,
-                                onValueChange = { tempAddress = tempAddress.copy(city = it) },
-                                label = { Text(stringResource(R.string.city), color = Hint) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Accent,
-                                    unfocusedBorderColor = Block,
-                                    cursorColor = Accent,
-                                    focusedTextColor = Text,
-                                    unfocusedTextColor = Text
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = tempAddress.street,
-                                onValueChange = { tempAddress = tempAddress.copy(street = it) },
-                                label = { Text(stringResource(R.string.street), color = Hint) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Accent,
-                                    unfocusedBorderColor = Block,
-                                    cursorColor = Accent,
-                                    focusedTextColor = Text,
-                                    unfocusedTextColor = Text
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = tempAddress.house,
-                                onValueChange = { tempAddress = tempAddress.copy(house = it) },
-                                label = { Text(stringResource(R.string.home1), color = Hint) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Accent,
-                                    unfocusedBorderColor = Block,
-                                    cursorColor = Accent,
-                                    focusedTextColor = Text,
-                                    unfocusedTextColor = Text
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = tempAddress.apartment,
-                                onValueChange = { tempAddress = tempAddress.copy(apartment = it) },
-                                label = { Text(stringResource(R.string.home2), color = Hint) },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Accent,
-                                    unfocusedBorderColor = Block,
-                                    cursorColor = Accent,
-                                    focusedTextColor = Text,
-                                    unfocusedTextColor = Text
-                                )
-                            )
-
-                            PrimaryButton(
-                                text = stringResource(R.string.done),
-                                onClick = {
-                                    viewModel.updateAddress(tempAddress)
-                                    editingAddress = false
-                                },
-                                height = 40.dp,
-                                backgroundColor = Accent,
-                                textColor = Block,
-                                style = AppTypography.labelMedium
-                            )
-                        }
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Accent,
+                                unfocusedBorderColor = Block,
+                                cursorColor = Accent,
+                                focusedTextColor = Text,
+                                unfocusedTextColor = Text
+                            ),
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        viewModel.updateAddress(tempAddress.fullAddress)
+                                        editingAddress = false
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.edit_mark),
+                                        contentDescription = null,
+                                        tint = Accent,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        )
                     } else {
                         Row(
                             modifier = Modifier.fillMaxWidth().background(Block, RoundedCornerShape(8.dp)).padding(12.dp),
@@ -434,7 +378,7 @@ fun CheckoutScreen(
                                     color = Hint
                                 )
                                 Text(
-                                    text = address.toDisplayString().ifEmpty { stringResource(R.string.home3) },
+                                    text = address.fullAddress.ifEmpty { stringResource(R.string.home3) },
                                     style = AppTypography.bodySmall,
                                     color = Text,
                                     modifier = Modifier.padding(top = 4.dp)
@@ -606,25 +550,4 @@ fun PaymentMethodSelector(
             }
         }
     }
-}
-
-@Composable
-fun AddressDialog(
-    currentAddress: Address,
-    onAddressSelected: (Address) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var selectedAddress by remember { mutableStateOf(currentAddress) }
-
-    MessageDialog(
-        title = "Введите адрес",
-        description = "Укажите страну, город, улицу, дом и квартиру",
-        onOk = {
-            onAddressSelected(selectedAddress)
-        },
-        onCancel = onDismiss,
-        okButtonText = "Готово",
-        cancelButtonText = "Отмена",
-        showButtons = false
-    )
 }

@@ -17,21 +17,9 @@ data class ContactInfo(
 )
 
 data class Address(
-    val country: String = "",
-    val city: String = "",
-    val street: String = "",
-    val house: String = "",
-    val apartment: String = ""
+    val fullAddress: String = ""
 ) {
-    fun toDisplayString(): String {
-        return listOfNotNull(
-            country.takeIf { it.isNotEmpty() },
-            city.takeIf { it.isNotEmpty() },
-            street.takeIf { it.isNotEmpty() },
-            house.takeIf { it.isNotEmpty() },
-            apartment.takeIf { it.isNotEmpty() }
-        ).joinToString(", ")
-    }
+    fun toDisplayString(): String = fullAddress
 }
 
 data class CreateOrderRequest(
@@ -115,26 +103,8 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
             email = email
         )
 
-        val addressParts = parseAddress(profile.address)
         _address.value = Address(
-            country = addressParts["country"] ?: "",
-            city = addressParts["city"] ?: "",
-            street = addressParts["street"] ?: "",
-            house = addressParts["house"] ?: "",
-            apartment = addressParts["apartment"] ?: ""
-        )
-    }
-
-    private fun parseAddress(addressString: String?): Map<String, String> {
-        if (addressString.isNullOrEmpty()) return emptyMap()
-
-        val parts = addressString.split(",").map { it.trim() }
-        return mapOf(
-            "country" to (parts.getOrNull(0) ?: ""),
-            "city" to (parts.getOrNull(1) ?: ""),
-            "street" to (parts.getOrNull(2) ?: ""),
-            "house" to (parts.getOrNull(3) ?: ""),
-            "apartment" to (parts.getOrNull(4) ?: "")
+            fullAddress = profile.address ?: ""
         )
     }
 
@@ -147,19 +117,9 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
         _contactInfo.value = ContactInfo(phone = phone, email = email)
 
-        val country = sharedPrefs.getString("userCountry", "") ?: ""
-        val city = sharedPrefs.getString("userCity", "") ?: ""
-        val street = sharedPrefs.getString("userStreet", "") ?: ""
-        val house = sharedPrefs.getString("userHouse", "") ?: ""
-        val apartment = sharedPrefs.getString("userApartment", "") ?: ""
+        val fullAddress = sharedPrefs.getString("userAddress", "") ?: ""
 
-        _address.value = Address(
-            country = country,
-            city = city,
-            street = street,
-            house = house,
-            apartment = apartment
-        )
+        _address.value = Address(fullAddress = fullAddress)
     }
 
     private fun calculateCart() {
@@ -172,8 +132,8 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         saveLocalData()
     }
 
-    fun updateAddress(address: Address) {
-        _address.value = address
+    fun updateAddress(fullAddress: String) {
+        _address.value = Address(fullAddress = fullAddress)
         saveLocalData()
     }
 
@@ -191,11 +151,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
         sharedPrefs.edit().apply {
             putString("userPhone", _contactInfo.value.phone)
-            putString("userCountry", _address.value.country)
-            putString("userCity", _address.value.city)
-            putString("userStreet", _address.value.street)
-            putString("userHouse", _address.value.house)
-            putString("userApartment", _address.value.apartment)
+            putString("userAddress", _address.value.fullAddress)
             apply()
         }
     }
