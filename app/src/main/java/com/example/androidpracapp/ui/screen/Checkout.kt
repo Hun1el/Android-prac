@@ -7,46 +7,25 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,13 +34,7 @@ import com.example.androidpracapp.data.services.LocationService
 import com.example.androidpracapp.ui.components.BackButton
 import com.example.androidpracapp.ui.components.MessageDialog
 import com.example.androidpracapp.ui.components.PrimaryButton
-import com.example.androidpracapp.ui.theme.Accent
-import com.example.androidpracapp.ui.theme.AppTypography
-import com.example.androidpracapp.ui.theme.Background
-import com.example.androidpracapp.ui.theme.Block
-import com.example.androidpracapp.ui.theme.Hint
-import com.example.androidpracapp.ui.theme.Red
-import com.example.androidpracapp.ui.theme.Text
+import com.example.androidpracapp.ui.theme.*
 import com.example.androidpracapp.ui.viewModel.Address
 import com.example.androidpracapp.ui.viewModel.CheckoutViewModel
 import kotlinx.coroutines.launch
@@ -75,11 +48,12 @@ fun CheckoutScreen(
 ) {
     val contactInfo by viewModel.contactInfo.collectAsState()
     val address by viewModel.address.collectAsState()
-    val paymentMethod by viewModel.paymentMethod.collectAsState()
+    val cardNumber by viewModel.cardNumber.collectAsState()
     val subtotal by viewModel.subtotal.collectAsState()
     val delivery by viewModel.delivery.collectAsState()
     val total by viewModel.total.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val validationError by viewModel.validationError.collectAsState()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -114,8 +88,37 @@ fun CheckoutScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.refreshCheckoutData()
+    class CardNumberVisualTransformation : VisualTransformation {
+        override fun filter(text: AnnotatedString): TransformedText {
+            val trimmed = if (text.text.length >= 16) text.text.substring(0, 16) else text.text
+
+            val formatted = trimmed.chunked(4).joinToString(" ")
+
+            val annotatedString = AnnotatedString(formatted)
+
+            val offsetMapping = object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int {
+                    if (offset == 0) return 0
+                    if (offset <= 4) return offset
+                    if (offset <= 8) return offset + 1
+                    if (offset <= 12) return offset + 2
+                    return offset + 3
+                }
+
+                override fun transformedToOriginal(offset: Int): Int {
+                    if (offset == 0) return 0
+                    if (offset <= 4) return offset
+                    if (offset == 5) return 4
+                    if (offset <= 9) return offset - 1
+                    if (offset == 10) return 8
+                    if (offset <= 14) return offset - 2
+                    if (offset == 15) return 12
+                    return offset - 3
+                }
+            }
+
+            return TransformedText(annotatedString, offsetMapping)
+        }
     }
 
     LaunchedEffect(contactInfo) {
@@ -133,14 +136,7 @@ fun CheckoutScreen(
             description = "Сумма к оплате: ₽${String.format("%.2f", total)}",
             onOk = {
                 showConfirmDialog = false
-                viewModel.placeOrder(
-                    phone = contactInfo.phone,
-                    email = contactInfo.email,
-                    address = address,
-                    paymentMethod = paymentMethod,
-                    total = total,
-                    onSuccess = onOrderSuccess
-                )
+                viewModel.placeOrder(onSuccess = onOrderSuccess)
             },
             onCancel = {
                 showConfirmDialog = false
@@ -259,22 +255,35 @@ fun CheckoutScreen(
                 }
 
                 item {
-                    ContactField(
-                        label = stringResource(R.string.email),
-                        value = if (editingEmail) {
-                            tempEmail
-                        } else {
-                            contactInfo.email
-                        },
-                        isEditing = editingEmail,
-                        onEditClick = {
-                            if (editingEmail) {
-                                viewModel.updateContactInfo(phone = contactInfo.phone, email = tempEmail)
-                            }
-                            editingEmail = !editingEmail
-                        },
-                        onValueChange = { tempEmail = it }
-                    )
+                    Column {
+                        ContactField(
+                            label = stringResource(R.string.email),
+                            value = if (editingEmail) {
+                                tempEmail
+                            } else {
+                                contactInfo.email
+                            },
+                            isEditing = editingEmail,
+                            onEditClick = {
+                                if (editingEmail) {
+                                    viewModel.updateContactInfo(
+                                        contactInfo.phone,
+                                        tempEmail
+                                    )
+                                }
+                                editingEmail = !editingEmail
+                            },
+                            onValueChange = { tempEmail = it }
+                        )
+                        if (validationError != null) {
+                            Text(
+                                text = validationError!!,
+                                color = Red,
+                                style = AppTypography.labelSmall,
+                                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                            )
+                        }
+                    }
                 }
 
                 item {
@@ -284,7 +293,10 @@ fun CheckoutScreen(
                         isEditing = editingPhone,
                         onEditClick = {
                             if (editingPhone) {
-                                viewModel.updateContactInfo(phone = tempPhone, email = contactInfo.email)
+                                viewModel.updateContactInfo(
+                                    tempPhone,
+                                    contactInfo.email
+                                )
                             }
                             editingPhone = !editingPhone
                         },
@@ -303,18 +315,32 @@ fun CheckoutScreen(
 
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable {
-                                val permission = Manifest.permission.ACCESS_FINE_LOCATION
-                                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Block)
+                            .clickable {
+                                val permission =
+                                    Manifest.permission.ACCESS_FINE_LOCATION
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        permission
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
                                     scope.launch {
-                                        val coordinates = locationService.getCurrentLocation()
+                                        val coordinates =
+                                            locationService.getCurrentLocation()
                                         if (coordinates != null) {
-                                            val newAddress = locationService.getAddressFromCoordinates(
-                                                coordinates.first,
-                                                coordinates.second
-                                            )
+                                            val newAddress =
+                                                locationService.getAddressFromCoordinates(
+                                                    coordinates.first,
+                                                    coordinates.second
+                                                )
                                             if (newAddress != null) {
-                                                viewModel.updateAddress(newAddress.fullAddress)
+                                                viewModel.updateAddress(
+                                                    newAddress.fullAddress
+                                                )
                                                 tempAddress = newAddress
                                             }
                                         }
@@ -333,7 +359,6 @@ fun CheckoutScreen(
                         )
                     }
                 }
-
 
                 item {
                     if (editingAddress) {
@@ -367,7 +392,10 @@ fun CheckoutScreen(
                         )
                     } else {
                         Row(
-                            modifier = Modifier.fillMaxWidth().background(Block, RoundedCornerShape(8.dp)).padding(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Block, RoundedCornerShape(8.dp))
+                                .padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -409,11 +437,28 @@ fun CheckoutScreen(
                 }
 
                 item {
-                    PaymentMethodSelector(
-                        selectedMethod = paymentMethod,
-                        onMethodSelected = { viewModel.updatePaymentMethod(it) }
+                    OutlinedTextField(
+                        value = cardNumber,
+                        onValueChange = { newValue ->
+                            val filtered = newValue.filter { it.isDigit() }.take(16)
+                            viewModel.updateCardNumber(filtered)
+                        },
+                        label = { Text(stringResource(R.string.card_number), color = Hint) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Accent,
+                            unfocusedBorderColor = Block,
+                            cursorColor = Accent,
+                            focusedTextColor = Text,
+                            unfocusedTextColor = Text
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        placeholder = { Text("1234 5678 9012 3456", color = Hint) },
+                        visualTransformation = CardNumberVisualTransformation(),
+                        singleLine = true
                     )
                 }
+
 
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
@@ -488,64 +533,6 @@ fun ContactField(
                     contentDescription = null,
                     tint = Hint,
                     modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun PaymentMethodSelector(
-    selectedMethod: String,
-    onMethodSelected: (String) -> Unit
-) {
-    val methods = listOf("Добавить", "Карта", "Наличные")
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        methods.forEach { method ->
-            Row(
-                modifier = Modifier.fillMaxWidth().background(
-                        if (selectedMethod == method) {
-                            Accent
-                        } else {
-                            Block
-                        },
-                        RoundedCornerShape(8.dp)
-                    ).clickable { onMethodSelected(method) }.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Box(
-                    modifier = Modifier.size(20.dp).background(
-                            if (selectedMethod == method) {
-                                Block
-                            } else {
-                                Background
-                            },
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (selectedMethod == method) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.edit_mark),
-                            contentDescription = null,
-                            tint = Accent,
-                            modifier = Modifier.size(12.dp)
-                        )
-                    }
-                }
-                Text(
-                    text = method,
-                    style = AppTypography.bodySmall,
-                    color = if (selectedMethod == method) {
-                        Block
-                    } else {
-                        Text
-                    }
                 )
             }
         }
