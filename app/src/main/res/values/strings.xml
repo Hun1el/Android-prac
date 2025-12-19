@@ -87,4 +87,5 @@
     <string name="home2">Квартира</string>
     <string name="home3">Не указан</string>
     <string name="card_number">Номер карты</string>
+    <string name="order1">Заказ</string>
 </resources>

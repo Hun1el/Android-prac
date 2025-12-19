@@ -23,6 +23,7 @@ playServicesMaps = "19.2.0"
 playServicesLocationVersion = "21.3.0"
 billing = "1.1.0"
 ui = "1.10.0"
+playServicesCastFramework = "22.2.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -55,6 +56,7 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 gms-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocationVersion" }
 billing = { group = "com.google.androidbrowserhelper", name = "billing", version.ref = "billing" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+play-services-cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServicesCastFramework" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

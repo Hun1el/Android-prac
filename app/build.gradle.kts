@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.gms.play.services.location)
     implementation(libs.billing)
     implementation(libs.androidx.ui)
+    implementation(libs.play.services.cast.framework)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

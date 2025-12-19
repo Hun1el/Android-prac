@@ -88,4 +88,5 @@
     <string name="home2">Apartment</string>
     <string name="home3">Not specified</string>
     <string name="card_number">Card number</string>
+    <string name="order1">Order</string>
 </resources>

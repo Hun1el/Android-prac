@@ -14,27 +14,17 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import com.example.androidpracapp.R
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
-import com.example.androidpracapp.ui.screen.CartScreen
-import com.example.androidpracapp.ui.screen.CatalogScreen
-import com.example.androidpracapp.ui.screen.CheckoutScreen
-import com.example.androidpracapp.ui.screen.CreateNewPasswordScreen
-import com.example.androidpracapp.ui.screen.FavoriteScreen
-import com.example.androidpracapp.ui.screen.ForgotPasswordScreen
-import com.example.androidpracapp.ui.screen.HomeScreen
-import com.example.androidpracapp.ui.screen.OnboardPagerScreen
-import com.example.androidpracapp.ui.screen.ProfileScreen
-import com.example.androidpracapp.ui.screen.RegisterAccountScreen
-import com.example.androidpracapp.ui.screen.SignInScreen
-import com.example.androidpracapp.ui.screen.SplashScreen
-import com.example.androidpracapp.ui.screen.VerificationScreen
+import com.example.androidpracapp.ui.screen.*
+import com.example.androidpracapp.ui.screens.OrdersScreen // Импорт твоего нового экрана
 import com.example.androidpracapp.ui.screens.ProductDetailScreen
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
+import com.example.androidpracapp.ui.viewModel.OrdersViewModel // Импорт ViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
@@ -153,14 +143,67 @@ fun NavigationApp(navController: NavHostController) {
             )
         }
 
-        composable(
-            route = "${NavRoute.ProductDetails.route}/{productId}",
-            arguments = listOf(navArgument("productId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            ProductDetailScreen(
-                startProductId = productId,
-                onBackClick = { navController.popBackStack() },
+        composable(NavRoute.Favorite.route) {
+            val favoriteViewModel: FavoriteViewModel = viewModel()
+
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 1,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = onFabCartClick,
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    FavoriteScreen(
+                        viewModel = favoriteViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        composable(NavRoute.Orders.route) {
+            val ordersViewModel: OrdersViewModel = viewModel()
+
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        items = listOf(
+                            BottomNavItem(R.drawable.home, "Home"),
+                            BottomNavItem(R.drawable.favorite, "Favorite"),
+                            BottomNavItem(R.drawable.orders, "Orders"),
+                            BottomNavItem(R.drawable.profile, "Profile"),
+                        ),
+                        selectedTabIndex = 2,
+                        onTabSelected = { index -> navigateToTab(index) },
+                        onFabClick = onFabCartClick,
+                        fabIconRes = R.drawable.shoping
+                    )
+                }
+            ) { padding ->
+                Box(modifier = Modifier.padding(padding)) {
+                    OrdersScreen(
+                        viewModel = ordersViewModel,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+            }
+        }
+
+        composable(NavRoute.Profile.route) {
+            ProfileScreen(
+                selectedTabIndex = 3,
+                onTabSelected = { index -> navigateToTab(index) },
+                onFabClick = onFabCartClick
             )
         }
 
@@ -201,80 +244,6 @@ fun NavigationApp(navController: NavHostController) {
                     }
                 }
             )
-        }
-
-        composable(NavRoute.Favorite.route) {
-            val favoriteViewModel: FavoriteViewModel = viewModel()
-
-            Scaffold(
-                bottomBar = {
-                    BottomNavigation(
-                        items = listOf(
-                            BottomNavItem(R.drawable.home, "Home"),
-                            BottomNavItem(R.drawable.favorite, "Favorite"),
-                            BottomNavItem(R.drawable.orders, "Orders"),
-                            BottomNavItem(R.drawable.profile, "Profile"),
-                        ),
-                        selectedTabIndex = 1,
-                        onTabSelected = { index -> navigateToTab(index) },
-                        onFabClick = onFabCartClick,
-                        fabIconRes = R.drawable.shoping
-                    )
-                }
-            ) { padding ->
-                Box(modifier = Modifier.padding(padding)) {
-                    FavoriteScreen(
-                        viewModel = favoriteViewModel,
-                        onBackClick = { navController.popBackStack() }
-                    )
-                }
-            }
-        }
-
-        composable(NavRoute.Orders.route) {
-            PlaceholderScreen(
-                title = stringResource(R.string.order),
-                index = 2,
-                onTabSelected = { index -> navigateToTab(index) },
-                onFabClick = onFabCartClick
-            )
-        }
-
-        composable(NavRoute.Profile.route) {
-            ProfileScreen(
-                selectedTabIndex = 3,
-                onTabSelected = { index -> navigateToTab(index) },
-                onFabClick = onFabCartClick
-            )
-        }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(
-    title: String,
-    index: Int,
-    onTabSelected: (Int) -> Unit,
-    onFabClick: () -> Unit
-) {
-    Scaffold(
-        bottomBar = {
-            BottomNavigation(
-                items = listOf(
-                    BottomNavItem(R.drawable.home, "Home"),
-                    BottomNavItem(R.drawable.favorite, "Favorite"),
-                    BottomNavItem(R.drawable.orders, "Orders"),
-                    BottomNavItem(R.drawable.profile, "Profile"),
-                ),
-                selectedTabIndex = index,
-                onTabSelected = onTabSelected,
-                onFabClick = onFabClick,
-                fabIconRes = R.drawable.shoping
-            )
-        }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-            Text(text = title)
         }
     }
 }
