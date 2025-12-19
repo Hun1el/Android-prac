@@ -96,6 +96,10 @@ fun CheckoutScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshCheckoutData()
+    }
+
     LaunchedEffect(contactInfo) {
         tempPhone = contactInfo.phone
         tempEmail = contactInfo.email

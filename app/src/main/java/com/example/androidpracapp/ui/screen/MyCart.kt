@@ -253,7 +253,11 @@ fun CartItemRow(
             ) {
                 Box(
                     modifier = Modifier.size(28.dp).background(
-                        if (item.count > 1) Accent else Hint,
+                        if (item.count > 1) {
+                            Accent
+                        } else {
+                            Hint
+                        },
                         RoundedCornerShape(6.dp)
                     ).clickable(enabled = item.count > 1) {
                         if (item.count > 1) onDecrease()

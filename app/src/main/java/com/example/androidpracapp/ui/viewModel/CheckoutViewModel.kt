@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
+import com.example.androidpracapp.data.services.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -67,7 +68,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     val isLoading = _isLoading.asStateFlow()
 
     init {
-        loadUserData()
+        loadCheckoutData()
         calculateCart()
     }
 
@@ -77,12 +78,72 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         return sharedPrefs.getString("userId", null)
     }
 
-    private fun loadUserData() {
+    private fun getEmailFromPrefs(): String? {
+        val context = getApplication<Application>()
+        val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
+        return sharedPrefs.getString("userEmail", "")
+    }
+
+    private fun loadCheckoutData() {
+        val userId = getUserIdFromPrefs() ?: return
+
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = RetrofitInstance.profileManagementService.getUserProfile("eq.$userId")
+
+                if (response.isSuccessful && !response.body().isNullOrEmpty()) {
+                    val profile = response.body()!![0]
+                    updateDataFromProfile(profile)
+                } else {
+                    loadLocalData()
+                }
+            } catch (e: Exception) {
+                Log.e("CheckoutViewModel", "Ошибка загрузки профиля: ${e.message}")
+                loadLocalData()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    private fun updateDataFromProfile(profile: UserProfile) {
+        val email = getEmailFromPrefs() ?: ""
+
+        _contactInfo.value = ContactInfo(
+            phone = profile.phone ?: "",
+            email = email
+        )
+
+        val addressParts = parseAddress(profile.address)
+        _address.value = Address(
+            country = addressParts["country"] ?: "",
+            city = addressParts["city"] ?: "",
+            street = addressParts["street"] ?: "",
+            house = addressParts["house"] ?: "",
+            apartment = addressParts["apartment"] ?: ""
+        )
+    }
+
+    private fun parseAddress(addressString: String?): Map<String, String> {
+        if (addressString.isNullOrEmpty()) return emptyMap()
+
+        val parts = addressString.split(",").map { it.trim() }
+        return mapOf(
+            "country" to (parts.getOrNull(0) ?: ""),
+            "city" to (parts.getOrNull(1) ?: ""),
+            "street" to (parts.getOrNull(2) ?: ""),
+            "house" to (parts.getOrNull(3) ?: ""),
+            "apartment" to (parts.getOrNull(4) ?: "")
+        )
+    }
+
+    private fun loadLocalData() {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
 
         val phone = sharedPrefs.getString("userPhone", "") ?: ""
-        val email = sharedPrefs.getString("userEmail", "") ?: ""
+        val email = getEmailFromPrefs() ?: ""
 
         _contactInfo.value = ContactInfo(phone = phone, email = email)
 
@@ -108,25 +169,28 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
     fun updateContactInfo(phone: String, email: String) {
         _contactInfo.value = ContactInfo(phone = phone, email = email)
-        saveUserData()
+        saveLocalData()
     }
 
     fun updateAddress(address: Address) {
         _address.value = address
-        saveUserData()
+        saveLocalData()
     }
 
     fun updatePaymentMethod(method: String) {
         _paymentMethod.value = method
     }
 
-    private fun saveUserData() {
+    fun refreshCheckoutData() {
+        loadCheckoutData()
+    }
+
+    private fun saveLocalData() {
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
 
         sharedPrefs.edit().apply {
             putString("userPhone", _contactInfo.value.phone)
-            putString("userEmail", _contactInfo.value.email)
             putString("userCountry", _address.value.country)
             putString("userCity", _address.value.city)
             putString("userStreet", _address.value.street)
