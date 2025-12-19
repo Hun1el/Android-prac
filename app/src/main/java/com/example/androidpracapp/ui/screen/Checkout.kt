@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -54,6 +53,7 @@ fun CheckoutScreen(
     val total by viewModel.total.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val validationError by viewModel.validationError.collectAsState()
+    val isFormValid by viewModel.isFormValid.collectAsState()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -63,6 +63,7 @@ fun CheckoutScreen(
     var editingEmail by remember { mutableStateOf(false) }
     var editingAddress by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     var tempPhone by remember { mutableStateOf(contactInfo.phone) }
     var tempEmail by remember { mutableStateOf(contactInfo.email) }
@@ -91,11 +92,8 @@ fun CheckoutScreen(
     class CardNumberVisualTransformation : VisualTransformation {
         override fun filter(text: AnnotatedString): TransformedText {
             val trimmed = if (text.text.length >= 16) text.text.substring(0, 16) else text.text
-
             val formatted = trimmed.chunked(4).joinToString(" ")
-
             val annotatedString = AnnotatedString(formatted)
-
             val offsetMapping = object : OffsetMapping {
                 override fun originalToTransformed(offset: Int): Int {
                     if (offset == 0) return 0
@@ -116,7 +114,6 @@ fun CheckoutScreen(
                     return offset - 3
                 }
             }
-
             return TransformedText(annotatedString, offsetMapping)
         }
     }
@@ -136,7 +133,9 @@ fun CheckoutScreen(
             description = "Сумма к оплате: ₽${String.format("%.2f", total)}",
             onOk = {
                 showConfirmDialog = false
-                viewModel.placeOrder(onSuccess = onOrderSuccess)
+                viewModel.placeOrder(onSuccess = {
+                    showSuccessDialog = true
+                })
             },
             onCancel = {
                 showConfirmDialog = false
@@ -145,6 +144,22 @@ fun CheckoutScreen(
             cancelButtonText = "Отмена",
             okButtonColor = Accent,
             cancelButtonColor = Red
+        )
+    }
+
+    if (showSuccessDialog) {
+        MessageDialog(
+            title = "Вы успешно\nоформили заказ",
+            description = "",
+            icon = painterResource(id = R.drawable.celebration),
+            onOk = {
+                showSuccessDialog = false
+                onOrderSuccess()
+            },
+            showButtons = true,
+            okButtonText = "Вернуться к покупкам",
+            onCancel = null,
+            okButtonColor = Accent
         )
     }
 
@@ -208,9 +223,17 @@ fun CheckoutScreen(
 
                 PrimaryButton(
                     text = stringResource(R.string.confirm),
-                    onClick = { showConfirmDialog = true },
+                    onClick = {
+                        if (isFormValid) {
+                            showConfirmDialog = true
+                        }
+                    },
                     height = 50.dp,
-                    backgroundColor = Accent,
+                    backgroundColor = if (isFormValid) {
+                        Accent
+                    } else {
+                        Disable
+                    },
                     textColor = Block,
                     style = AppTypography.labelMedium
                 )
@@ -315,18 +338,10 @@ fun CheckoutScreen(
 
                 item {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Block)
-                            .clickable {
+                        modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(16.dp)).background(Block).clickable {
                                 val permission =
                                     Manifest.permission.ACCESS_FINE_LOCATION
-                                if (ContextCompat.checkSelfPermission(
-                                        context,
-                                        permission
-                                    ) == PackageManager.PERMISSION_GRANTED
+                                if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
                                 ) {
                                     scope.launch {
                                         val coordinates =
@@ -392,10 +407,7 @@ fun CheckoutScreen(
                         )
                     } else {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Block, RoundedCornerShape(8.dp))
-                                .padding(12.dp),
+                            modifier = Modifier.fillMaxWidth().background(Block, RoundedCornerShape(8.dp)).padding(12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {

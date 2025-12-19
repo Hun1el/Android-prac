@@ -10,7 +10,10 @@ import com.example.androidpracapp.data.services.CreateOrderRequest
 import com.example.androidpracapp.data.services.UserProfile
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class ContactInfo(
@@ -53,6 +56,17 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     private val _validationError = MutableStateFlow<String?>(null)
     val validationError = _validationError.asStateFlow()
 
+    // --- НОВОЕ: Поле валидации формы ---
+    val isFormValid = combine(_contactInfo, _address, _cardNumber) { contact, addr, card ->
+        val isEmailValid = checkEmail(contact.email) == null
+        val isPhoneValid = contact.phone.isNotBlank()
+        val isAddressValid = addr.fullAddress.isNotBlank()
+        val isCardValid = card.isNotBlank() && card.length >= 16 // Простая проверка длины
+
+        isEmailValid && isPhoneValid && isAddressValid && isCardValid
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    // ----------------------------------
+
     init {
         Log.d("Checkout", "CheckoutViewModel initialized")
         loadCheckoutData()
@@ -82,7 +96,6 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
             !regex.matches(email) -> "Email должен быть валидным (login@domain.ru)"
             else -> null
         }
-        Log.d("Checkout", "checkEmail: email=$email, error=$error")
         return error
     }
 
@@ -174,19 +187,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun placeOrder(onSuccess: () -> Unit) {
-        val emailError = checkEmail(_contactInfo.value.email)
-        if (emailError != null) {
-            _validationError.value = emailError
-            return
-        }
-        if (_cardNumber.value.isBlank()) {
-            _validationError.value = "Укажите номер карты"
-            return
-        }
-        if (_address.value.fullAddress.isBlank()) {
-            _validationError.value = "Укажите адрес доставки"
-            return
-        }
+        if (!isFormValid.value) return // Доп. защита
 
         viewModelScope.launch {
             _isLoading.value = true
@@ -207,22 +208,17 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
                     delivery_coast = _delivery.value.toLong()
                 )
 
-                Log.d("Checkout", "placeOrder: sending request...")
-
                 val response = RetrofitInstance.orderManagementService.createOrder(orderRequest)
 
                 if (response.isSuccessful) {
-                    Log.d("Checkout", "placeOrder: SUCCESS! Code=${response.code()}")
                     clearCart(userId)
                     _cardNumber.value = ""
                     onSuccess()
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("Checkout", "placeOrder: failed code=${response.code()}, error=$errorBody")
                     _validationError.value = "Ошибка: ${response.code()}"
                 }
             } catch (e: Exception) {
-                Log.e("Checkout", "placeOrder: exception", e)
                 _validationError.value = "Ошибка: ${e.message}"
             } finally {
                 _isLoading.value = false
