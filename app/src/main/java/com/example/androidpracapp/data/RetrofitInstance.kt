@@ -30,21 +30,21 @@ object RetrofitInstance {
         chain.proceed(request)
     }
 
-    private var proxy: Proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("10.207.106.77", 3128))
-    private var client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .proxy(proxy)
-        .addInterceptor(authInterceptor)
-        .build()
-
-//    val client: OkHttpClient = OkHttpClient.Builder()
+//    private var proxy: Proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress("10.207.106.77", 3128))
+//    private var client: OkHttpClient = OkHttpClient.Builder()
 //        .connectTimeout(30, TimeUnit.SECONDS)
 //        .readTimeout(30, TimeUnit.SECONDS)
 //        .writeTimeout(30, TimeUnit.SECONDS)
+//        .proxy(proxy)
 //        .addInterceptor(authInterceptor)
 //        .build()
+
+    val client: OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor(authInterceptor)
+        .build()
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(SUPABASE_URL)

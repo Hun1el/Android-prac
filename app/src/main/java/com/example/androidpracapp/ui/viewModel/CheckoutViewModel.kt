@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.androidpracapp.data.RetrofitInstance
 import com.example.androidpracapp.data.services.UserProfile
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,6 +35,9 @@ data class CreateOrderRequest(
 
 class CheckoutViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val cartService = RetrofitInstance.cartManagementService
+    private val catalogService = RetrofitInstance.catalogManagementService
+
     private val _contactInfo = MutableStateFlow(ContactInfo())
     val contactInfo = _contactInfo.asStateFlow()
 
@@ -57,7 +61,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
     init {
         loadCheckoutData()
-        calculateCart()
+        loadCartAndCalculate()
     }
 
     private fun getUserIdFromPrefs(): String? {
@@ -70,6 +74,43 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         val context = getApplication<Application>()
         val sharedPrefs = context.getSharedPreferences("my_shared_pref", Context.MODE_PRIVATE)
         return sharedPrefs.getString("userEmail", "")
+    }
+
+    private fun loadCartAndCalculate() {
+        val userId = getUserIdFromPrefs() ?: return
+
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val cartDeferred = async { cartService.getCartItems(userId = "eq.$userId") }
+                val productsDeferred = async { catalogService.getProducts() }
+
+                val cartResponse = cartDeferred.await()
+                val productsResponse = productsDeferred.await()
+
+                if (cartResponse.isSuccessful && productsResponse.isSuccessful) {
+                    val cartEntries = cartResponse.body() ?: emptyList()
+                    val allProducts = productsResponse.body() ?: emptyList()
+
+                    // Считаем сумму
+                    val calculatedSubtotal = cartEntries.sumOf { entry ->
+                        val product = allProducts.find { it.id == entry.product_id }
+                        val price = product?.cost ?: 0.0
+                        val count = entry.count ?: 1
+                        price * count
+                    }
+
+                    _subtotal.value = calculatedSubtotal
+                    _total.value = calculatedSubtotal + _delivery.value
+                } else {
+                    Log.e("CheckoutViewModel", "Ошибка загрузки корзины для расчета")
+                }
+            } catch (e: Exception) {
+                Log.e("CheckoutViewModel", "Ошибка расчета суммы: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
     private fun loadCheckoutData() {
@@ -122,11 +163,6 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         _address.value = Address(fullAddress = fullAddress)
     }
 
-    private fun calculateCart() {
-        _subtotal.value = 2000.0
-        _total.value = _subtotal.value + _delivery.value
-    }
-
     fun updateContactInfo(phone: String, email: String) {
         _contactInfo.value = ContactInfo(phone = phone, email = email)
         saveLocalData()
@@ -143,6 +179,7 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
 
     fun refreshCheckoutData() {
         loadCheckoutData()
+        loadCartAndCalculate()
     }
 
     private fun saveLocalData() {

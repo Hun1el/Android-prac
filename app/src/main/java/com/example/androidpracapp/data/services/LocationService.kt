@@ -93,13 +93,17 @@ class LocationService(private val context: Context) {
     ): String {
         val parts = mutableListOf<String>()
 
-        address.thoroughfare?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
-        address.featureName?.takeIf { it.isNotEmpty() && it != address.thoroughfare }?.let { parts.add(it) }
+        address.countryName?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+
+        address.adminArea?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+
         address.locality?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
 
-        if (parts.isEmpty()) {
-            address.adminArea?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
-            address.countryName?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+        address.thoroughfare?.takeIf { it.isNotEmpty() }?.let { parts.add(it) }
+
+        val houseNumber = address.subThoroughfare ?: address.featureName
+        if (!houseNumber.isNullOrEmpty() && houseNumber != address.thoroughfare) {
+            parts.add(houseNumber)
         }
 
         return parts.joinToString(", ").ifEmpty {
