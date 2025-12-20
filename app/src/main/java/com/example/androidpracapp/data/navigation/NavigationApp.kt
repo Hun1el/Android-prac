@@ -20,11 +20,11 @@ import com.example.androidpracapp.R
 import com.example.androidpracapp.ui.components.BottomNavItem
 import com.example.androidpracapp.ui.components.BottomNavigation
 import com.example.androidpracapp.ui.screen.*
-import com.example.androidpracapp.ui.screens.OrdersScreen // Импорт твоего нового экрана
+import com.example.androidpracapp.ui.screens.OrdersScreen
 import com.example.androidpracapp.ui.screens.ProductDetailScreen
 import com.example.androidpracapp.ui.viewModel.CatalogViewModel
 import com.example.androidpracapp.ui.viewModel.FavoriteViewModel
-import com.example.androidpracapp.ui.viewModel.OrdersViewModel // Импорт ViewModel
+import com.example.androidpracapp.ui.viewModel.OrdersViewModel
 import com.example.androidpracapp.ui.viewModel.SignInViewModel
 import com.example.androidpracapp.ui.viewModel.SignUpViewModel
 
